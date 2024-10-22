@@ -61,9 +61,9 @@ void cpubench(int N, int pid) {
     elapsed_ticks = end_tick - start_tick;
 
     // TODO: Cambiar esto por la métrica adecuada
-    metric = total_cpu_kops;
+    metric = total_cpu_kops*1000/elapsed_ticks;
     measurements[i] = metric;
-    printf("%d\t[cpubench]\tmetric_name_cpu\t%d\t%d\t%d\n",
+    printf("%d\t[cpubench]\tPerfomance\t%d\t%d\t%d\n",
            pid, metric, start_tick, elapsed_ticks);
   }
 }
