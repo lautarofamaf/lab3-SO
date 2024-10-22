@@ -75,4 +75,20 @@ La politica que utiliza es *Round Robbin* ejectutando una lista de proceso donde
 
 ### ¿Qué es un *quantum*? ¿Dónde se define en el código? ¿Cuánto dura un *quantum* en xv6-riscv?
 
-Un *quantum* es un periodo de tiempo establecido en planificadores como **round robin** o **mflq** (multitareas), para que todos los procesos tengan un tiempo justo de ejecución en el CPU.
+#### ¿Qué es un quantum?
+
+Un quantum es una unidad de tiempo durante la cual un proceso se ejecuta en un sistema de tiempo compartido. Al finalizar el quantum, si el proceso no ha terminado, el sistema operativo interrumpe su ejecución y da la oportunidad a otro proceso de ejecutarse. Esto permite la multitarea y asegura que todos los procesos reciban tiempo de CPU.
+
+#### ¿Dónde se define en el código?
+
+ El quantum se define en:
+- *Archivo*: start.c
+- *Función*: timerinit
+- *Línea relevante*: 
+```c
+int interval = 1000000; // cycles; about 1/10th second in qemu.
+```
+
+#### ¿Cuánto dura un quantum en xv6-riscv?
+
+El quantum en xv6-riscv dura 1000000 ciclos, lo que equivale aproximadamente a 1/10 de segundo en QEMU. Este valor se usa para configurar el registro CLINT_MTIMECMP y determinar el…
