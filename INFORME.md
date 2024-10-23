@@ -107,6 +107,61 @@ El quantum en xv6-riscv dura 1000000 ciclos, lo que equivale aproximadamente a 1
 
 
 ### ¿En qué parte del código ocurre el cambio de contexto en `xv6-riscv`? ¿En qué funciones un proceso deja de ser ejecutado? ¿En qué funciones se elige el nuevo proceso a ejecutar?
+
+## ¿En qué parte del código ocurre el cambio de contexto en `xv6-riscv`?
+
+Existe una función llamada **swtch**  implementada  en el archivo swtch.S (código maquina) la cual es la encargada de hacer posible el cambio de contexto. 
+
+    
+   Luego otra función **Sched** es el encargado de realizar el cambio de contexto cuando un proceso ya no puede continuar ejecutándose. Lo que hace este swtch es cambiar el contexto del proceso al del scheduler
+
+	
+   Luego esta función es llamada en otras como **scheduler**  que es la que decide que proceso se va a ejecutar a continuación y llama a swtch para realizar el cambio de contexto del scheduler al del proceso a ejecutarse 
+
+
+
+
+
+
+
+## ¿En qué funciones un proceso deja de ser ejecutado? 
+
+Hay varias funciones donde un proceso deja de ser ejecutado, ya sea por un cambio de contexto o por un cambio de estado. Entre ellas estan:
+ - Funcion **swtch**: Es la funcion en codigo maquina encargada de hacer el cambio de contexto 
+ - Funcion **sleep**: Esta fucion manda a dormir un  poceso 
+ - Funcion **yeild**: Cunado un proceso usa esta funcion, sede voluntariamente CPU
+ - Funcio **sched**: Realiza un cambio de contexto cuando sea necesario llamando a swtch
+ -  Funcion **exit** : Provoca tambien con la diferencia que sera de manera definitiva
+
+
+
+## ¿En qué funciones se elige el nuevo proceso a ejecutar?
+
+Dentro de la función 
+```c 
+void scheduler(void)		
+```
+ se encuentra un bucle infinito donde  se recorre un  arreglo de procesos para buscar el siguiente proceso que este en estado RUNNEABLE Cuando encuentra uno, realiza el cambio de contexto usando la función :
+ ```c 
+swtch(&c->context, &p->context); // swtch 
+```
+
+
+-Donde  (**p->contex**)  es el puntero al contexto del proceso nuevo , el que se ejecutara a continuación.
+
+-Luego **(c->context)**  es un puntero al proceso actual, donde los registros serán guardados para luego utilizarlos mas adelante  
+
+-Luego la funcion guarda el indice donde se quedo para seguir recorriendo desde alli.
+
+
+Ademas en la Función 
+```c 
+void sched(void)		
+```
+se realiza toda la lógica para que el proceso actual derive CPU para que se ejecute el siguiente proceso encontrado por la función anterior 
+
+
+
 ...
 ### ¿El cambio de contexto consume tiempo de un *quantum*?
 ...
