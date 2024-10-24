@@ -11,8 +11,7 @@ Integrantes del grupo(03):
 
 ### ¿Qué política de planificación utiliza `xv6-riscv` para elegir el próximo proceso a ejecutarse?
 
-
-La politica que utiliza es *Round Robbin* ejectutando una lista de proceso donde cada      se ejecuta en un tiempo fijo antes de ser interrumpido y ejecutar el sieguiente.
+Xv6 implementa una política de planificación muy básica llamada *Round Robin* donde cada proceso se ejecuta por turnos, es decir, cada uno se ejecuta en un tiempo fijo antes de ser interrumpido y pasar a ejecutar el sieguiente. Obviamente el proceso puede no haber acabado su ejecución por lo cual se deberá guardar toda la información asociada a ese proceso antes de ejecutar el proximo. Gracias a la implementacion del scheduler de xv6 todos los procesos terminaran en algun momento de ejecutarse por completo.
 
 
 
@@ -102,7 +101,7 @@ int interval = 1000000; // cycles; about 1/10th second in qemu.
 
 #### ¿Cuánto dura un quantum en xv6-riscv?
 
-El quantum en xv6-riscv dura 1000000 ciclos, lo que equivale aproximadamente a 1/10 de segundo en QEMU. Este valor se usa para configurar el registro CLINT_MTIMECMP y determinar el…
+El quantum en xv6-riscv dura 1000000 ciclos, lo que equivale aproximadamente a 1/10 de segundo en QEMU. Este valor se usa para configurar el registro CLINT_MTIMECMP y determinar el momento exacto en el cual deberia haber una timer interrupt para avisarle al proceso que su quantum termino y devolverle el control al sistema operativo.
 
 
 
@@ -164,7 +163,12 @@ se realiza toda la lógica para que el proceso actual derive CPU para que se eje
 
 ...
 ### ¿El cambio de contexto consume tiempo de un *quantum*?
-...
+
+No estamos muy seguros de que el context swtich consuma tiempo del quantum. Si lo hiciera entonces consumiria quantum del siguiente proceso a ejecutar ya que el quantum del proceso anterior habria terminado en el peor de los casos con una timer interrupt,es decir, se le acabo el quantum. Si no consumiera estariamos asumiendo que el sistema operativo tiene intervalos mucho mas pequeños de tiempo en donde se produce el context swtich sin consumir tiempo de ningun quantum, cosa que tampoco hemos visto.
+
+
+
+
 
 ## Segunda parte: Medir operaciones de cómputo y de entrada/salida
 
