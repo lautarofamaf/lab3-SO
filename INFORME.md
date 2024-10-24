@@ -191,3 +191,132 @@ Algo a destacar y notar es que los **kops** y **iops** son multiplicados por 100
 #### 4.¿Cambia el rendimiento de los procesos cpubound con respecto a la cantidad y tipo de procesos que se estén ejecutando en paralelo? ¿Por qué?
 
 #### 5. ¿Es adecuado comparar la cantidad de operaciones de cpu con la cantidad de operaciones iobound?
+
+#### iobench 10 &
+| id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 4  | [iobench] | Perfomance  | 3820   | 2041       | 268          |
+| 4  | [iobench] | Perfomance  | 3953   | 2309       | 259          |
+| 4  | [iobench] | Perfomance  | 3968   | 2569       | 258          |
+| 4  | [iobench] | Perfomance  | 3968   | 2828       | 258          |
+| 4  | [iobench] | Perfomance  | 3953   | 3087       | 259          |
+| 4  | [iobench] | Perfomance  | 3953   | 3346       | 259          |
+| 4  | [iobench] | Perfomance  | 3968   | 3606       | 258          |
+| 4  | [iobench] | Perfomance  | 3953   | 3865       | 259          |
+| 4  | [iobench] | Perfomance  | 3953   | 4125       | 259          |
+| 4  | [iobench] | Perfomance  | 3968   | 4384       | 258          |
+
+
+
+
+
+
+#### iobench 10 &; iobench 10 &; iobench 10 &
+| id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 8 | [iobench] | Perfomance | 3112 | 2284 | 329 |
+| 8 | [iobench] | Perfomance | 5595 | 2615 | 183 |
+| 8 | [iobench] | Perfomance | 4923 | 2799 | 208 |
+| 8 | [iobench] | Perfomance | 4946 | 3007 | 207 |
+| 8 | [iobench] | Perfomance | 4718 | 3215 | 217 |
+| 8 | [iobench] | Perfomance | 7937 | 3434 | 129 |
+| 8 | [iobench] | Perfomance | 3820 | 3566 | 268 |
+| 8 | [iobench] | Perfomance | 4162 | 3834 | 246 |
+| 8 | [iobench] | Perfomance | 4899 | 4083 | 209 |
+| 8 | [iobench] | Perfomance | 4357 | 4292 | 235 |
+
+| id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 5  | [iobench] | Perfomance  | 4063   | 2283       | 252          |
+| 5  | [iobench] | Perfomance  | 5333   | 2537       | 192          |
+| 5  | [iobench] | Perfomance  | 3710   | 2731       | 276          |
+| 5  | [iobench] | Perfomance  | 4432   | 3009       | 231          |
+| 5  | [iobench] | Perfomance  | 4047   | 3240       | 253          |
+| 5  | [iobench] | Perfomance  | 4511   | 3493       | 227          |
+| 5  | [iobench] | Perfomance  | 5657   | 3721       | 181          |
+| 5  | [iobench] | Perfomance  | 3084   | 3902       | 332          |
+| 5  | [iobench] | Perfomance  | 4231   | 4236       | 242          |
+| 5  | [iobench] | Perfomance  | 5505   | 4482       | 186          |
+
+
+| id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 7  | [iobench] | Perfomance  | 4612   | 2284       | 222          |
+| 7  | [iobench] | Perfomance  | 3112   | 2506       | 329          |
+| 7  | [iobench] | Perfomance  | 5120   | 2837       | 200          |
+| 7  | [iobench] | Perfomance  | 3864   | 3039       | 265          |
+| 7  | [iobench] | Perfomance  | 3555   | 3306       | 288          |
+| 7  | [iobench] | Perfomance  | 5278   | 3595       | 194          |
+| 7  | [iobench] | Perfomance  | 4284   | 3789       | 239          |
+| 7  | [iobench] | Perfomance  | 4946   | 4028       | 207          |
+| 7  | [iobench] | Perfomance  | 5094   | 4235       | 201          |
+| 7  | [iobench] | Perfomance  | 5171   | 4436       | 198          |
+
+
+#### cpubench 10 &
+
+| id | Type       | name_metric | Metric  | Start_tick | Elapsed_tick |
+|----|------------|-------------|---------|------------|--------------|
+| 12 | [cpubench] | Perfomance  | 3334360 | 13404      | 161          |
+| 12 | [cpubench] | Perfomance  | 3334360 | 13566      | 161          |
+| 12 | [cpubench] | Perfomance  | 3334360 | 13728      | 161          |
+| 12 | [cpubench] | Perfomance  | 3313777 | 13889      | 162          |
+| 12 | [cpubench] | Perfomance  | 3334360 | 14051      | 161          |
+| 12 | [cpubench] | Perfomance  | 3334360 | 14213      | 161          |
+| 12 | [cpubench] | Perfomance  | 3334360 | 14375      | 161          |
+| 12 | [cpubench] | Perfomance  | 3313777 | 14536      | 162          |
+| 12 | [cpubench] | Perfomance  | 3334360 | 14698      | 161          |
+| 12 | [cpubench] | Perfomance  | 3334360 | 14860      | 161          |
+
+
+#### cpubench 10 &; cpubench 10 &; cpubench 10 &
+
+| id | Type       | name_metric | Metric  | Start_tick | Elapsed_tick |
+|----|------------|-------------|---------|------------|--------------|
+| 22 | [cpubench] | Perfomance  | 1111453 | 21567      | 483          |
+| 22 | [cpubench] | Perfomance  | 1111453 | 22053      | 483          |
+| 22 | [cpubench] | Perfomance  | 1111453 | 22539      | 483          |
+| 22 | [cpubench] | Perfomance  | 1111453 | 23025      | 483          |
+| 22 | [cpubench] | Perfomance  | 1111453 | 23511      | 483          |
+| 22 | [cpubench] | Perfomance  | 1111453 | 23994      | 483          |
+| 22 | [cpubench] | Perfomance  | 1111453 | 24480      | 483          |
+| 22 | [cpubench] | Perfomance  | 1118400 | 24966      | 480          |
+| 22 | [cpubench] | Perfomance  | 1111453 | 25449      | 483          |
+| 22 | [cpubench] | Perfomance  | 1156965 | 25932      | 464          |
+
+
+| id | Type       | name_metric | Metric  | Start_tick | Elapsed_tick |
+|----|------------|-------------|---------|------------|--------------|
+| 21 | [cpubench] | Perfomance  | 1118400 | 21566      | 480          |
+| 21 | [cpubench] | Perfomance  | 1125433 | 22049      | 477          |
+| 21 | [cpubench] | Perfomance  | 1118400 | 22529      | 480          |
+| 21 | [cpubench] | Perfomance  | 1118400 | 23009      | 480          |
+| 21 | [cpubench] | Perfomance  | 1125433 | 23492      | 477          |
+| 21 | [cpubench] | Perfomance  | 1125433 | 23972      | 477          |
+| 21 | [cpubench] | Perfomance  | 1125433 | 24452      | 477          |
+| 21 | [cpubench] | Perfomance  | 1118400 | 24932      | 480          |
+| 21 | [cpubench] | Perfomance  | 1118400 | 25412      | 480          |
+| 21 | [cpubench] | Perfomance  | 1125433 | 25895      | 477          |
+
+
+
+| id | Type       | name_metric | Metric  | Start_tick | Elapsed_tick |
+|----|------------|-------------|---------|------------|--------------|
+| 19 | [cpubench] | Perfomance  | 1118400 | 21568      | 480          |
+| 19 | [cpubench] | Perfomance  | 1111453 | 22048      | 483          |
+| 19 | [cpubench] | Perfomance  | 1111453 | 22531      | 483          |
+| 19 | [cpubench] | Perfomance  | 1118400 | 23017      | 480          |
+| 19 | [cpubench] | Perfomance  | 1111453 | 23497      | 483          |
+| 19 | [cpubench] | Perfomance  | 1118400 | 23980      | 480          |
+| 19 | [cpubench] | Perfomance  | 1118400 | 24463      | 480          |
+| 19 | [cpubench] | Perfomance  | 1118400 | 24946      | 480          |
+| 19 | [cpubench] | Perfomance  | 1118400 | 25429      | 480          |
+| 19 | [cpubench] | Perfomance  | 1132556 | 25912      | 474          |
+
+
+#### iobench 10 &; cpubench 10 &; cpubench 10 &; cpubench 10 &
+
+
+
+
+#### cpubench 10 &; iobench 10 &; iobench 10 &; iobench 10 &
