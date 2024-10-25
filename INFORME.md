@@ -164,7 +164,7 @@ se realiza toda la lógica para que el proceso actual derive CPU para que se eje
 ...
 ### ¿El cambio de contexto consume tiempo de un *quantum*?
 
-No estamos muy seguros de que el context swtich consuma tiempo del quantum. Si lo hiciera entonces consumiria quantum del siguiente proceso a ejecutar ya que el quantum del proceso anterior habria terminado en el peor de los casos con una timer interrupt,es decir, se le acabo el quantum. Si no consumiera estariamos asumiendo que el sistema operativo tiene intervalos mucho mas pequeños de tiempo en donde se produce el context swtich sin consumir tiempo de ningun quantum, cosa que tampoco hemos visto.
+La repuesta que daremos a esta pregunta es sí, y nos basamos para responderla en un pequeño experimento en el cual consiste en disminuir el quantum a "tiempos" o ticks pequeñitos y ver si funciona o no el *programa*. Dado que ni siquiera se puede *inicializar la terminal* a disminuir el tick a 100, lo que concluimos es que para iniciar la terminal se tienen que realizar una cierta cantidad de procesos los cuales usan context-switch para moverse entre ellos y nunca se pueden concretar puesto que el contex-switch en sí consume el quantum que tienen para ejecutarse llevando que el *programa* nunca ejecute codigo sino más bien se un bucle de context-switches.
 
 
 
@@ -182,15 +182,7 @@ Algo a destacar y notar es que los **kops** y **iops** son multiplicados por 100
 
 ### Experimento 1: ¿Cómo son planificados los programas iobound y cpubound?
 
-#### 1. Describa los parámetros de los programas cpubench e iobench para este experimento (o sea, los define al principio y el valor de N. Tener en cuenta que podrían cambiar en experimentos futuros, pero que si lo hacen los resultados ya no serán comparables).
-
-#### 2. ¿Los procesos se ejecutan en paralelo? ¿En promedio, qué proceso o procesos se ejecutan primero? Hacer una observación cualitativa.
-
-#### 3. ¿Cambia el rendimiento de los procesos iobound con respecto a la cantidad y tipo de procesos que se estén ejecutando en paralelo? ¿Por qué?
-
-#### 4.¿Cambia el rendimiento de los procesos cpubound con respecto a la cantidad y tipo de procesos que se estén ejecutando en paralelo? ¿Por qué?
-
-#### 5. ¿Es adecuado comparar la cantidad de operaciones de cpu con la cantidad de operaciones iobound?
+#### Resultados de experimento 1:
 
 #### iobench 10 &
 | id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
@@ -316,7 +308,128 @@ Algo a destacar y notar es que los **kops** y **iops** son multiplicados por 100
 
 #### iobench 10 &; cpubench 10 &; cpubench 10 &; cpubench 10 &
 
+| id | Type       | name_metric | Metric  | Start_tick | Elapsed_tick |
+|----|------------|-------------|---------|------------|--------------|
+| 23 | [cpubench] | Perfomance  | 1034358 | 30860      | 519          |
+| 23 | [cpubench] | Perfomance  | 1034358 | 31382      | 519          |
+| 23 | [cpubench] | Perfomance  | 1040372 | 31901      | 516          |
+| 23 | [cpubench] | Perfomance  | 1040372 | 32420      | 516          |
+| 23 | [cpubench] | Perfomance  | 1034358 | 32939      | 519          |
+| 23 | [cpubench] | Perfomance  | 1040372 | 33461      | 516          |
+| 23 | [cpubench] | Perfomance  | 1034358 | 33977      | 519          |
+| 23 | [cpubench] | Perfomance  | 1034358 | 34499      | 519          |
+| 23 | [cpubench] | Perfomance  | 1034358 | 35018      | 519          |
+| 23 | [cpubench] | Perfomance  | 1883621 | 35540      | 285          |
 
 
+| id | Type       | name_metric | Metric  | Start_tick | Elapsed_tick |
+|----|------------|-------------|---------|------------|--------------|
+| 26 | [cpubench] | Perfomance  | 1100065 | 30866      | 488          |
+| 26 | [cpubench] | Perfomance  | 1111453 | 31354      | 483          |
+| 26 | [cpubench] | Perfomance  | 1111453 | 31840      | 483          |
+| 26 | [cpubench] | Perfomance  | 1111453 | 32326      | 483          |
+| 26 | [cpubench] | Perfomance  | 1111453 | 32809      | 483          |
+| 26 | [cpubench] | Perfomance  | 1111453 | 33295      | 483          |
+| 26 | [cpubench] | Perfomance  | 1111453 | 33781      | 483          |
+| 26 | [cpubench] | Perfomance  | 1111453 | 34267      | 483          |
+| 26 | [cpubench] | Perfomance  | 1111453 | 34753      | 483          |
+| 26 | [cpubench] | Perfomance  | 1134951 | 35239      | 473          |
+
+
+| id | Type       | name_metric | Metric  | Start_tick | Elapsed_tick |
+|----|------------|-------------|---------|------------|--------------|
+| 25 | [cpubench] | Perfomance  | 1113759 | 30862      | 482          |
+| 25 | [cpubench] | Perfomance  | 1118400 | 31347      | 480          |
+| 25 | [cpubench] | Perfomance  | 1118400 | 31830      | 480          |
+| 25 | [cpubench] | Perfomance  | 1111453 | 32310      | 483          |
+| 25 | [cpubench] | Perfomance  | 1118400 | 32796      | 480          |
+| 25 | [cpubench] | Perfomance  | 1118400 | 33279      | 480          |
+| 25 | [cpubench] | Perfomance  | 1118400 | 33762      | 480          |
+| 25 | [cpubench] | Perfomance  | 1111453 | 34242      | 483          |
+| 25 | [cpubench] | Perfomance  | 1118400 | 34725      | 480          |
+| 25 | [cpubench] | Perfomance  | 1118400 | 35208      | 480          |
+
+| id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 21 | [iobench] | Perfomance  | 201    | 30879      | 5082         |
+| 21 | [iobench] | Perfomance  | 3968   | 35961      | 258          |
+| 21 | [iobench] | Perfomance  | 3953   | 36220      | 259          |
+| 21 | [iobench] | Perfomance  | 3953   | 36479      | 259          |
+| 21 | [iobench] | Perfomance  | 3938   | 36738      | 260          |
+| 21 | [iobench] | Perfomance  | 3968   | 36998      | 258          |
+| 21 | [iobench] | Perfomance  | 3953   | 37257      | 259          |
+| 21 | [iobench] | Perfomance  | 3968   | 37516      | 258          |
+| 21 | [iobench] | Perfomance  | 3953   | 37775      | 259          |
+| 21 | [iobench] | Perfomance  | 3984   | 38035      | 257          |
 
 #### cpubench 10 &; iobench 10 &; iobench 10 &; iobench 10 &
+
+| id | Type       | name_metric | Metric  | Start_tick | Elapsed_tick |
+|----|------------|-------------|---------|------------|--------------|
+| 5  | [cpubench] | Perfomance  | 2949626 | 3158       | 182          |
+| 5  | [cpubench] | Perfomance  | 2982400 | 3341       | 180          |
+| 5  | [cpubench] | Perfomance  | 2965922 | 3522       | 181          |
+| 5  | [cpubench] | Perfomance  | 2982400 | 3704       | 180          |
+| 5  | [cpubench] | Perfomance  | 2949626 | 3884       | 182          |
+| 5  | [cpubench] | Perfomance  | 2670805 | 4067       | 201          |
+| 5  | [cpubench] | Perfomance  | 2901794 | 4268       | 185          |
+| 5  | [cpubench] | Perfomance  | 2933508 | 4454       | 183          |
+| 5  | [cpubench] | Perfomance  | 2982400 | 4638       | 180          |
+| 5  | [cpubench] | Perfomance  | 2508560 | 4818       | 214          |
+
+
+
+| id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 10 | [iobench] | Perfomance  | 522    | 3162       | 1959         |
+| 10 | [iobench] | Perfomance  | 4063   | 5121       | 252          |
+| 10 | [iobench] | Perfomance  | 3002   | 5373       | 341          |
+| 10 | [iobench] | Perfomance  | 3723   | 5714       | 275          |
+| 10 | [iobench] | Perfomance  | 4196   | 5991       | 244          |
+| 10 | [iobench] | Perfomance  | 4899   | 6235       | 209          |
+| 10 | [iobench] | Perfomance  | 4432   | 6444       | 231          |
+| 10 | [iobench] | Perfomance  | 7111   | 6677       | 144          |
+| 10 | [iobench] | Perfomance  | 5278   | 6824       | 194          |
+| 10 | [iobench] | Perfomance  | 3953   | 7019       | 259          |
+
+
+| id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 9  | [iobench] | Perfomance  | 522    | 3162       | 1958         |
+| 9  | [iobench] | Perfomance  | 4718   | 5120       | 217          |
+| 9  | [iobench] | Perfomance  | 5361   | 5339       | 191          |
+| 9  | [iobench] | Perfomance  | 4452   | 5530       | 230          |
+| 9  | [iobench] | Perfomance  | 5278   | 5760       | 194          |
+| 9  | [iobench] | Perfomance  | 3923   | 5954       | 261          |
+| 9  | [iobench] | Perfomance  | 5851   | 6215       | 175          |
+| 9  | [iobench] | Perfomance  | 3631   | 6393       | 282          |
+| 9  | [iobench] | Perfomance  | 5720   | 6675       | 179          |
+| 9  | [iobench] | Perfomance  | 7474   | 6854       | 137          |
+
+
+
+| id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 7  | [iobench] | Perfomance  | 1025   | 3159       | 999          |
+| 7  | [iobench] | Perfomance  | 1199   | 4158       | 854          |
+| 7  | [iobench] | Perfomance  | 4762   | 5012       | 215          |
+| 7  | [iobench] | Perfomance  | 4633   | 5227       | 221          |
+| 7  | [iobench] | Perfomance  | 4357   | 5448       | 235          |
+| 7  | [iobench] | Perfomance  | 3792   | 5683       | 270          |
+| 7  | [iobench] | Perfomance  | 5953   | 5955       | 172          |
+| 7  | [iobench] | Perfomance  | 5171   | 6128       | 198          |
+| 7  | [iobench] | Perfomance  | 3631   | 6326       | 282          |
+| 7  | [iobench] | Perfomance  | 3112   | 6609       | 329          |
+
+
+
+
+#### 1. Describa los parámetros de los programas cpubench e iobench para este experimento (o sea, los define al principio y el valor de N. Tener en cuenta que podrían cambiar en experimentos futuros, pero que si lo hacen los resultados ya no serán comparables).
+
+#### 2. ¿Los procesos se ejecutan en paralelo? ¿En promedio, qué proceso o procesos se ejecutan primero? Hacer una observación cualitativa.
+
+#### 3. ¿Cambia el rendimiento de los procesos iobound con respecto a la cantidad y tipo de procesos que se estén ejecutando en paralelo? ¿Por qué?
+
+#### 4.¿Cambia el rendimiento de los procesos cpubound con respecto a la cantidad y tipo de procesos que se estén ejecutando en paralelo? ¿Por qué?
+
+#### 5. ¿Es adecuado comparar la cantidad de operaciones de cpu con la cantidad de operaciones iobound?
