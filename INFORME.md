@@ -455,11 +455,23 @@ Estos parámetros podrían cambiar en experimentos futuros, pero si lo hacen, lo
 
 ### 2. ¿Los procesos se ejecutan en paralelo? ¿En promedio, qué proceso o procesos se ejecutan primero? Hacer una observación cualitativa.
 
-#### ¿Los procesos se ejecutan en paralelo? 
-No, los proceso no se ejecutan en paralelos ya que al hacer `make CPUS=1 qemu` estamos corriendo el emulador con un solo core de procesador, es  decir lo estamos limitando a que no haya ejecucion paralela multinucleo.
+#### ¿Los procesos se ejecutan en paralelo?
 
+No, los procesos no se ejecutan en paralelo ya que al hacer `make CPUS=1 qemu` estamos corriendo el emulador con un solo núcleo de procesador, es decir, lo estamos limitando a que no haya ejecución paralela multinúcleo.
+
+Sin embargo, podemos decir que los procesos sí se ejecutan concurrentemente. Esto es fácil de ver dado que en las ejecuciones del experimento nos da el valor de `start_tick` y el valor de `elapsed_tick`, por lo que la suma de esos sería `end_tick`. Esto se da por la fórmula (*end_tick - start_tick = elapsed_tick*). Ahora, esto nos dice que si los procesos no se ejecutan concurrentemente, entonces entre los ticks marcados por `start_tick` y `end_tick` de un proceso no puede encontrarse un `start_tick` de otro proceso. Por lo tanto, si encontramos un ejemplo en el que esto suceda, significa que los procesos actúan de manera concurrente.
+
+###### Ejemplo:
+En el experimento de
+###### iobench 10 &; cpubench 10 &; cpubench 10 &; cpubench 10 &
+| id | Type       | name_metric | Metric  | Start_tick | Elapsed_tick |
+|----|------------|-------------|---------|------------|--------------|
+| 23 | [cpubench] | Perfomance  | 1034358 | 30860      | 519          |
+| 26 | [cpubench] | Perfomance  | 1100065 | 30866      | 488          |
+
+En lo cual se ve como el `start_tick` del proceso con id:23 está dado por 30860 y `elapsed_tick` 519, por lo tanto, si no fuera concurrente no puede existir un proceso cuyo `start_tick` se encuentre entre 30860 y 31379 ticks. El proceso con id:26 tiene `start_tick` 30866. Queda demostrado concurrencia.
 #### ¿En promedio, qué proceso o procesos se ejecutan primero? Hacer una observación cualitativa.
-
+// Aca habría que hacer una grafica busquen la forma para hacer una grafica con los tiempos de start_tick de los procesos en los experimentos iobench 10 &; cpubench 10 &; cpubench 10 &; cpubench 10 & y cpubench 10 &; iobench 10 &; iobench 10 &; iobench 10 &. Y de ahí van a poder ver cuales se suelen ejecutar primero.
 ### 3. ¿Cambia el rendimiento de los procesos iobound con respecto a la cantidad y tipo de procesos que se estén ejecutando en paralelo? ¿Por qué?
 
 ### 4.¿Cambia el rendimiento de los procesos cpubound con respecto a la cantidad y tipo de procesos que se estén ejecutando en paralelo? ¿Por qué?
