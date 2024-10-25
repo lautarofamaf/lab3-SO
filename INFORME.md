@@ -107,14 +107,14 @@ El quantum en xv6-riscv dura 1000000 ciclos, lo que equivale aproximadamente a 1
 
 ### ¿En qué parte del código ocurre el cambio de contexto en `xv6-riscv`? ¿En qué funciones un proceso deja de ser ejecutado? ¿En qué funciones se elige el nuevo proceso a ejecutar?
 
-## ¿En qué parte del código ocurre el cambio de contexto en `xv6-riscv`?
+#### ¿En qué parte del código ocurre el cambio de contexto en `xv6-riscv`?
 
 Existe una función llamada **swtch**  implementada  en el archivo swtch.S (código maquina) la cual es la encargada de hacer posible el cambio de contexto. 
 
-    
+
    Luego otra función **Sched** es el encargado de realizar el cambio de contexto cuando un proceso ya no puede continuar ejecutándose. Lo que hace este swtch es cambiar el contexto del proceso al del scheduler
 
-	
+
    Luego esta función es llamada en otras como **scheduler**  que es la que decide que proceso se va a ejecutar a continuación y llama a swtch para realizar el cambio de contexto del scheduler al del proceso a ejecutarse 
 
 
@@ -123,7 +123,7 @@ Existe una función llamada **swtch**  implementada  en el archivo swtch.S (cód
 
 
 
-## ¿En qué funciones un proceso deja de ser ejecutado? 
+#### ¿En qué funciones un proceso deja de ser ejecutado? 
 
 Hay varias funciones donde un proceso deja de ser ejecutado, ya sea por un cambio de contexto o por un cambio de estado. Entre ellas estan:
  - Funcion **swtch**: Es la funcion en codigo maquina encargada de hacer el cambio de contexto 
@@ -134,7 +134,7 @@ Hay varias funciones donde un proceso deja de ser ejecutado, ya sea por un cambi
 
 
 
-## ¿En qué funciones se elige el nuevo proceso a ejecutar?
+#### ¿En qué funciones se elige el nuevo proceso a ejecutar?
 
 Dentro de la función 
 ```c 
@@ -143,7 +143,7 @@ void scheduler(void)
  se encuentra un bucle infinito donde  se recorre un  arreglo de procesos para buscar el siguiente proceso que este en estado RUNNEABLE Cuando encuentra uno, realiza el cambio de contexto usando la función :
  ```c 
 swtch(&c->context, &p->context); // swtch 
-```
+ ```
 
 
 -Donde  (**p->contex**)  es el puntero al contexto del proceso nuevo , el que se ejecutara a continuación.
@@ -164,11 +164,23 @@ se realiza toda la lógica para que el proceso actual derive CPU para que se eje
 ...
 ### ¿El cambio de contexto consume tiempo de un *quantum*?
 
-La repuesta que daremos a esta pregunta es sí, y nos basamos para responderla en un pequeño experimento en el cual consiste en disminuir el quantum a "tiempos" o ticks pequeñitos y ver si funciona o no el *programa*. Dado que ni siquiera se puede *inicializar la terminal* a disminuir el tick a 100, lo que concluimos es que para iniciar la terminal se tienen que realizar una cierta cantidad de procesos los cuales usan context-switch para moverse entre ellos y nunca se pueden concretar puesto que el contex-switch en sí consume el quantum que tienen para ejecutarse llevando que el *programa* nunca ejecute codigo sino más bien se un bucle de context-switches.
+Sí, el cambio de contexto consume tiempo del *quantum*. Basamos esta respuesta en un experimento en el que se disminuyó el *quantum* a valores muy pequeños y se observó el comportamiento del sistema. 
+
+En el experimento, al reducir el *quantum* a 100 ticks, se observó que el sistema no podía ni siquiera inicializar el sistema operativo xv6. Esto sugiere que para iniciar la terminal, se deben realizar una serie de procesos que dependen de los cambios de contexto para avanzar. Al tener un *quantum* tan reducido, el tiempo consumido por los cambios de contexto es suficiente para agotar el *quantum* disponible, impidiendo que los procesos ejecuten su código efectivamente. Como resultado, el sistema entra en un bucle de cambios de contexto sin ejecutar el código necesario, confirmando que el cambio de contexto consume parte del *quantum*.
+
+Podemos crear una visualización gráfica en Python para presentar la línea de tiempo de ticks y cambios de contexto. La gráfica puede mostrar cada quantum y destacar el tiempo consumido por el cambio de contexto al inicio de cada quantum. Esta imagen es acorde a como creemos que funcionan los quantums y cambios de contexto en xv6:
 
 
 
+![Línea de Tiempo de Quantum y Cambio de Contexto](quantum_context_switch_timeline.png)
 
+
+- Cada segmento rojo al inicio de un quantum representa el tiempo consumido por el **cambio de contexto (CS)**.
+- Los segmentos verdes representan el tiempo restante del **quantum** dedicado a la **ejecución del proceso**.
+
+Esto ilustra cómo el cambio de contexto consume una porción del quantum antes de que el proceso comience a ejecutar sus instrucciones.
+
+Notemos que esta es una mera representacion de como pensamos que funciona xv6.
 
 ## Segunda parte: Medir operaciones de cómputo y de entrada/salida
 
@@ -423,13 +435,33 @@ Algo a destacar y notar es que los **kops** y **iops** son multiplicados por 100
 
 
 
+### 1. Describa los parámetros de los programas cpubench e iobench para este experimento
 
-#### 1. Describa los parámetros de los programas cpubench e iobench para este experimento (o sea, los define al principio y el valor de N. Tener en cuenta que podrían cambiar en experimentos futuros, pero que si lo hacen los resultados ya no serán comparables).
+Para este experimento, decidimos que cada proceso realice 10 vueltas de medición (N=10) ya que vimos que es acorde con el requisito de que no pase 1 minuto. Por lo tanto, usamos este parámetro para nuestras mediciones.
 
-#### 2. ¿Los procesos se ejecutan en paralelo? ¿En promedio, qué proceso o procesos se ejecutan primero? Hacer una observación cualitativa.
+En el archivo `user/cpubench.c`, no modificamos los parámetros `CPU_MATRIX_SIZE` ni `CPU_EXPERIMENT_LEN`, dejándolos de la siguiente manera:
+```c
+#define CPU_MATRIX_SIZE 128
+#define CPU_EXPERIMENT_LEN 256
+```
 
-#### 3. ¿Cambia el rendimiento de los procesos iobound con respecto a la cantidad y tipo de procesos que se estén ejecutando en paralelo? ¿Por qué?
+De manera similar, en `user/iobench.c`, dejamos los siguientes parámetros sin modificar:
+```c
+#define IO_OPSIZE 64
+#define IO_EXPERIMENT_LEN 512
+```
 
-#### 4.¿Cambia el rendimiento de los procesos cpubound con respecto a la cantidad y tipo de procesos que se estén ejecutando en paralelo? ¿Por qué?
+Estos parámetros podrían cambiar en experimentos futuros, pero si lo hacen, los resultados ya no serán comparables.
 
-#### 5. ¿Es adecuado comparar la cantidad de operaciones de cpu con la cantidad de operaciones iobound?
+### 2. ¿Los procesos se ejecutan en paralelo? ¿En promedio, qué proceso o procesos se ejecutan primero? Hacer una observación cualitativa.
+
+#### ¿Los procesos se ejecutan en paralelo? 
+No, los proceso no se ejecutan en paralelos ya que al hacer `make CPUS=1 qemu` estamos corriendo el emulador con un solo core de procesador, es  decir lo estamos limitando a que no haya ejecucion paralela multinucleo.
+
+#### ¿En promedio, qué proceso o procesos se ejecutan primero? Hacer una observación cualitativa.
+
+### 3. ¿Cambia el rendimiento de los procesos iobound con respecto a la cantidad y tipo de procesos que se estén ejecutando en paralelo? ¿Por qué?
+
+### 4.¿Cambia el rendimiento de los procesos cpubound con respecto a la cantidad y tipo de procesos que se estén ejecutando en paralelo? ¿Por qué?
+
+### 5. ¿Es adecuado comparar la cantidad de operaciones de cpu con la cantidad de operaciones iobound?
