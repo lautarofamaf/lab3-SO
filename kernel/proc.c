@@ -124,7 +124,9 @@ allocproc(void)
 found:
   p->pid = allocpid();
   p->state = USED;
-
+  // Initialize MLFQ fields
+  p->priority = NPRIO - 1; // Highest priority
+  p->sched_count = 0;
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
     freeproc(p);
@@ -433,7 +435,21 @@ wait(uint64 addr)
     sleep(p, &wait_lock);  //DOC: wait-sleep
   }
 }
+struct proc* 
+find_highest_priority_proc(void) {
+  struct proc *p, *highest_priority_proc = 0;
 
+  for(p = proc; p < &proc[NPROC]; p++) {
+    if(p->state == RUNNABLE) {
+      if(highest_priority_proc == 0 || p->priority > highest_priority_proc->priority || (p->priority == highest_priority_proc->priority && 
+           p->num_scheduled < highest_priority_proc->num_scheduled)) {
+        highest_priority_proc = p;
+      }
+    }
+  }
+  
+  return highest_priority_proc;
+}
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
 // Scheduler never returns.  It loops, doing:
@@ -441,9 +457,8 @@ wait(uint64 addr)
 //  - swtch to start running that process.
 //  - eventually that process transfers control
 //    via swtch back to the scheduler.
-void
-scheduler(void)
-{
+void 
+scheduler(void) {
   struct proc *p;
   struct cpu *c = mycpu();
   
@@ -452,14 +467,17 @@ scheduler(void)
     // Avoid deadlock by ensuring that devices can interrupt.
     intr_on();
 
-    for(p = proc; p < &proc[NPROC]; p++) {
+    // Buscar el proceso con la prioridad más alta
+    p = find_highest_priority_proc();
+    if (p != 0) {
       acquire(&p->lock);
-      if(p->state == RUNNABLE) {
-        // Switch to chosen process.  It is the process's job
+      if (p->state == RUNNABLE) {
+        // Switch to chosen process. It is the process's job
         // to release its lock and then reacquire it
         // before jumping back to us.
         p->state = RUNNING;
         c->proc = p;
+        p->count_sched ++;
         swtch(&c->context, &p->context);
 
         // Process is done running for now.
