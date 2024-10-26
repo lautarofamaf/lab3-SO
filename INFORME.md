@@ -474,6 +474,134 @@ En lo cual se ve como el `start_tick` del proceso con id:23 está dado por 30860
 // Aca habría que hacer una grafica busquen la forma para hacer una grafica con los tiempos de start_tick de los procesos en los experimentos iobench 10 &; cpubench 10 &; cpubench 10 &; cpubench 10 & y cpubench 10 &; iobench 10 &; iobench 10 &; iobench 10 &. Y de ahí van a poder ver cuales se suelen ejecutar primero.
 ### 3. ¿Cambia el rendimiento de los procesos iobound con respecto a la cantidad y tipo de procesos que se estén ejecutando en paralelo? ¿Por qué?
 
+Analicemos cpubench 10; iobench10; iobench10; iobench 10; 
+
+| id | Type       | name_metric | Metric  | Start_tick | Elapsed_tick |
+|----|------------|-------------|---------|------------|--------------|
+| 5  | [cpubench] | Perfomance  | 2949626 | 3158       | 182          |
+
+| id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 10 | [iobench] | Perfomance  | 522    | 3162       | 1959         |
+
+| id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 9  | [iobench] | Perfomance  | 522    | 3162       | 1958         |
+
+| id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 7  | [iobench] | Perfomance  | 1025   | 3159       | 999          |
+
+Podemos ver que los procesos comenzaron en un star_tick bastante parecido, es decir, casi al mismo tiempo.Nos fijemos que los procesos iobench tuvieron un elapsed_tick bastante mas largo al del cpubench mientras este se seguia ejecutando, una vez que el cpubench terminó su ejecución los valores de elapsed_tick bajaron considerablemente:
+
+  (ultima ejecucion de cpubench termina en el tick 5032)
+| 5  | [cpubench] | Perfomance  | 2508560 | 4818       | 214          |
+ 
+A partir de ahora notamos una baja notable el el elapsed_tick de los procecesos iobound y ademas la metrica de estos aumentó considerablemente, esto quiere decir que mientras el proceso cpubench se ejecutaba esto afectaba el rendimiento de los procesos iobound, ya que estuvieron mas tiempo de ticks pero su metrica (cantidad de operaciones por ticks) fue considerablemente menor a los que se registraron luego de ejecutarse el cpubench.
+
+| id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 10 | [iobench] | Perfomance  | 4063   | 5121       | 252          |
+| 10 | [iobench] | Perfomance  | 3002   | 5373       | 341          |
+
+| id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 9  | [iobench] | Perfomance  | 4718   | 5120       | 217          |
+| 9  | [iobench] | Perfomance  | 5361   | 5339       | 191          |
+
+| id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 7  | [iobench] | Perfomance  | 4762   | 5012       | 215          |
+| 7  | [iobench] | Perfomance  | 4633   | 5227       | 221          |
+
+(Notar que los start_tick de estos iobench estan bastante cerca del tick final del cpubench)
+
+Por ultimo nos fijemos en como se comportan estas metricas y ticks una vez que solo quedan procesos iobound.
+
+| id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 10 | [iobench] | Perfomance  | 4063   | 5121       | 252          |
+| 10 | [iobench] | Perfomance  | 3002   | 5373       | 341          |
+| 10 | [iobench] | Perfomance  | 3723   | 5714       | 275          |
+| 10 | [iobench] | Perfomance  | 4196   | 5991       | 244          |
+| 10 | [iobench] | Perfomance  | 4899   | 6235       | 209          |
+| 10 | [iobench] | Perfomance  | 4432   | 6444       | 231          |
+| 10 | [iobench] | Perfomance  | 7111   | 6677       | 144          |
+| 10 | [iobench] | Perfomance  | 5278   | 6824       | 194          |
+| 10 | [iobench] | Perfomance  | 3953   | 7019       | 259          |
+
+| id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 9  | [iobench] | Perfomance  | 4718   | 5120       | 217          |
+| 9  | [iobench] | Perfomance  | 5361   | 5339       | 191          |
+| 9  | [iobench] | Perfomance  | 4452   | 5530       | 230          |
+| 9  | [iobench] | Perfomance  | 5278   | 5760       | 194          |
+| 9  | [iobench] | Perfomance  | 3923   | 5954       | 261          |
+| 9  | [iobench] | Perfomance  | 5851   | 6215       | 175          |
+| 9  | [iobench] | Perfomance  | 3631   | 6393       | 282          |
+| 9  | [iobench] | Perfomance  | 5720   | 6675       | 179          |
+| 9  | [iobench] | Perfomance  | 7474   | 6854       | 137          |
+
+| id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 7  | [iobench] | Perfomance  | 4762   | 5012       | 215          |
+| 7  | [iobench] | Perfomance  | 4633   | 5227       | 221          |
+| 7  | [iobench] | Perfomance  | 4357   | 5448       | 235          |
+| 7  | [iobench] | Perfomance  | 3792   | 5683       | 270          |
+| 7  | [iobench] | Perfomance  | 5953   | 5955       | 172          |
+| 7  | [iobench] | Perfomance  | 5171   | 6128       | 198          |
+| 7  | [iobench] | Perfomance  | 3631   | 6326       | 282          |
+| 7  | [iobench] | Perfomance  | 3112   | 6609       | 329          |
+
+Primero notemos la gran variabilidad en los elapsed_tick, esto puede deberse a varios motivos tales como la competencia entre recursos del sistema, tambien puede deberse a quue accediendo al disco se generen cuellos de botellas si hay varios procesos haciendo lo mismo (que los hay), etc, generando que el tiempo en tick de los procesos aumente o no. En la metrica tambien se ve reflejado esta variabilidad pero está ligado a lo mismo que genera esta "latencia" en los elapsed tick, es decir, que la competencia por recursos de I/O afecta el rendimiento de los procesos iobound.
+
+Conclusion:  Los procesos iobound si se ven afectados en rendimientos por los procesos que se ejecutan en paeralelo. Sufren de un costo de rendimiento mas alto si estos procesos son cpubound pero tambien se ven afectados por otros procesos iobound (pero en menor medida). Que se afecte el rendimiento puede deberse a la competencia de los recursos de I/O y que los procesos cpubench tienen a dominar la cpu como vimos en estas tablas.
+
 ### 4.¿Cambia el rendimiento de los procesos cpubound con respecto a la cantidad y tipo de procesos que se estén ejecutando en paralelo? ¿Por qué?
 
+Esta pregunta es mas facil de responder que la anterior. Podemos decir que los procesos cpubound no se ven casi afectados por los procesos iobound ya que como estos (cpubound) tienden a dominar el cpu, no necesitan tantos ticks si solo hay procesos iobound. Podemos ver esto comparando los elapsed_tick del cpubench en "cpubench 10 &; iobench10 &; iobench10 &; iobench 10 &;" y los de "cpubench 10 &;" notando así que no hay una gran diferencia.
+
+Ahora bien, si hay otros procesos cpubound esto puede cambiar. 
+Analicemos la tabla : "iobench 10 &; cpubench 10 &; cpubench 10 &; cpubench 10 &
+
+Lo mas llamativo de esta tabla es la parte del proceso con id (23): 
+
+| id | Type       | name_metric | Metric  | Start_tick | Elapsed_tick |
+|----|------------|-------------|---------|------------|--------------|
+| 23 | [cpubench] | Perfomance  | 1034358 | 30860      | 519          |
+| 23 | [cpubench] | Perfomance  | 1034358 | 31382      | 519          |
+| 23 | [cpubench] | Perfomance  | 1040372 | 31901      | 516          |
+| 23 | [cpubench] | Perfomance  | 1040372 | 32420      | 516          |
+| 23 | [cpubench] | Perfomance  | 1034358 | 32939      | 519          |
+| 23 | [cpubench] | Perfomance  | 1040372 | 33461      | 516          |
+| 23 | [cpubench] | Perfomance  | 1034358 | 33977      | 519          |
+| 23 | [cpubench] | Perfomance  | 1034358 | 34499      | 519          |
+| 23 | [cpubench] | Perfomance  | 1034358 | 35018      | 519          |
+| 23 | [cpubench] | Perfomance  | 1883621 | 35540      | 285          |
+
+Notemos que los elapsed_tick vienen bastantes consistentes (entre 516 y 519) pero la ultima fila baja a 285, que pasó ahí? 
+Analizando todos los otros procesos nos dimos cuenta que el start_tick de la ultima fila del proceso 23 fue el mas grande, es decir el que comenzó último.
+
+(A continuacion la ultima fila de los otros dos procesos cpubound)
+
+| id | Type       | name_metric | Metric  | Start_tick | Elapsed_tick |
+|----|------------|-------------|---------|------------|--------------|
+| 26 | [cpubench] | Perfomance  | 1134951 | 35239      | 473          |
+
+| id | Type       | name_metric | Metric  | Start_tick | Elapsed_tick |
+|----|------------|-------------|---------|------------|--------------|
+| 25 | [cpubench] | Perfomance  | 1118400 | 35208      | 480          |
+
+Como los end_tick de estos procesos son 35712 y 35688 respectivamente y el end_tick del proceso 23 es 35825, este ultimo proceso estuvo aproximadamente 137 ticks sin ningun otro proceso cpubound en paralelo, solo tenia un proceso iobound en paralelo pero como vimos no afecta considerablemente el rendimiento. Ahora si observamos la metrica de este ultimo proceso cpubound nos damos cuenta de que aumento un poco su metrica considerando las metricas que se obervaron cuando habia cpubounds en paralelo, por lo que podemos decir que si afectan ligeramente el rendimiento. A parte podemos notar que los elapsed_tick de los cpubound de la tabla que analizamos son un poco mayor a los elapsed_tick de la tabla "cpubench 10 &", lo que tambien nos da un indicio que los procesos cpubound suelen reducir un poco su rendimiento cuando hay otros procesos del mismo tipo ejecutandose en paralelo. Por ultimo podemos notar que si bien aumenta el elapsed_tick de una tabla  a la otra, la variabilidad sigue siendo bastante consistente en ambas tablas, es decir que observando el primer elapsed_tick de una tabla, los siguientes elapsed_tick van a caer en un rango bastante predecible.
+
+Conclusion: Los procesos cpubound pueden reducir un poco su rendimiento necesitando mas ticks para acabar su ejecucion cuando hay otros procesos cpubound en paralelo. Esto se debe de que hay mas procesos compitiendo por los recursos de computo de la cpu. Así y todo, los procesos cpubound mantienen sus elapsed_tick estables, que nos muestra como el sistema operativo reparte los recursos de una manera justa y predecible. 
+
+
+
 ### 5. ¿Es adecuado comparar la cantidad de operaciones de cpu con la cantidad de operaciones iobound?
+
+No es adecuado hacer esta comparacion, que los procesos cpubound solo necesitan de la disponibilidad de la cpu pudiendo ejecutarse de manera diligente cada vez que se le es posible y en cambio los procesos iobound estan bastante limitado por los tiempos de respuesta de I/O, es decir, la cantidad de operaciones de cpu no seria una metrica adecuada para los procesos iobound.
+
+
+
+(REVISAR Y/O CAMBIAR A GUSTO PROPIO LAS RESPUESTAS 3 4 Y 5 SI NO LES GUSTA ALGUNA PARTE)
