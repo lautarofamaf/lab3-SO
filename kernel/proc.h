@@ -105,6 +105,7 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
  //MLFQ fields 
-  uint64 priority;
-  uint64 count_sched;
+  uint32 priority;
+  uint32 count_sched;
+  int quantum_used;
 };

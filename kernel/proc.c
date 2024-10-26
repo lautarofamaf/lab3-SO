@@ -126,7 +126,8 @@ found:
   p->state = USED;
   // Initialize MLFQ fields
   p->priority = NPRIO - 1; // Highest priority
-  p->sched_count = 0;
+  p->count_sched = 0;
+  p->quantum_used = 0;
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
     freeproc(p);
@@ -440,14 +441,16 @@ find_highest_priority_proc(void) {
   struct proc *p, *highest_priority_proc = 0;
 
   for(p = proc; p < &proc[NPROC]; p++) {
+    acquire(&p->lock);
     if(p->state == RUNNABLE) {
       if(highest_priority_proc == 0 || p->priority > highest_priority_proc->priority || (p->priority == highest_priority_proc->priority && 
-           p->num_scheduled < highest_priority_proc->num_scheduled)) {
+           p->count_sched < highest_priority_proc->count_sched)) {
         highest_priority_proc = p;
       }
     }
+    release(&p->lock);
   }
-  
+
   return highest_priority_proc;
 }
 // Per-CPU process scheduler.
@@ -478,11 +481,24 @@ scheduler(void) {
         p->state = RUNNING;
         c->proc = p;
         p->count_sched ++;
+        p->quantum_used = 1;
         swtch(&c->context, &p->context);
+        if(p->quantum_used){
+            if(p->priority > 0){
+                p->priority--;
+            }
 
+        }
+        if(!p->quantum_used){
+            if(p->priority > NPRIO - 1 ){
+                p->priority++;
+            }
+
+        }
         // Process is done running for now.
         // It should have changed its p->state before coming back.
         c->proc = 0;
+   
       }
       release(&p->lock);
     }
@@ -569,6 +585,7 @@ sleep(void *chan, struct spinlock *lk)
   p->chan = chan;
   p->state = SLEEPING;
 
+  p->quantum_used = 0;
   sched();
 
   // Tidy up.
@@ -695,7 +712,7 @@ procdump(void)
       state = states[p->state];
     else
       state = "???";
-    printf("%d %s %s", p->pid, state, p->name);
+    printf("%d %s %s Priority:%d count_sched:%d", p->pid, state, p->name, p->priority, p->count_sched);
     printf("\n");
   }
 }
