@@ -496,7 +496,7 @@ Podemos ver que los procesos comenzaron en un star_tick bastante parecido, es de
 
   (ultima ejecucion de cpubench termina en el tick 5032)
 | 5  | [cpubench] | Perfomance  | 2508560 | 4818       | 214          |
- 
+
 A partir de ahora notamos una baja notable el el elapsed_tick de los procecesos iobound y ademas la metrica de estos aumentó considerablemente, esto quiere decir que mientras el proceso cpubench se ejecutaba esto afectaba el rendimiento de los procesos iobound, ya que estuvieron mas tiempo de ticks pero su metrica (cantidad de operaciones por ticks) fue considerablemente menor a los que se registraron luego de ejecutarse el cpubench.
 
 | id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
@@ -602,6 +602,392 @@ Conclusion: Los procesos cpubound pueden reducir un poco su rendimiento necesita
 
 No es adecuado hacer esta comparacion, que los procesos cpubound solo necesitan de la disponibilidad de la cpu pudiendo ejecutarse de manera diligente cada vez que se le es posible y en cambio los procesos iobound estan bastante limitado por los tiempos de respuesta de I/O, es decir, la cantidad de operaciones de cpu no seria una metrica adecuada para los procesos iobound.
 
+### Experimento 2: ¿Qué sucede cuando cambiamos el largo del quantum?
+
+#### Resultados de experimento 2:
+
+(poner el quatum con el que se dieron estas mediciones)
+
+#### iobench 10 &
+
+| id   | type      | metric_name | metric | Start_tick | Elapsed_tick |
+| ---- | --------- | ----------- | ------ | ---------- | ------------ |
+| 4    | [iobench] | Perfomance  | 306    | 7550       | 3345         |
+| 4    | [iobench] | Perfomance  | 316    | 10901      | 3234         |
+| 4    | [iobench] | Perfomance  | 316    | 14141      | 3233         |
+| 4    | [iobench] | Perfomance  | 316    | 17379      | 3232         |
+| 4    | [iobench] | Perfomance  | 315    | 20616      | 3241         |
+| 4    | [iobench] | Perfomance  | 316    | 23862      | 3232         |
+| 4    | [iobench] | Perfomance  | 316    | 27098      | 3233         |
+| 4    | [iobench] | Perfomance  | 317    | 30338      | 3225         |
+| 4    | [iobench] | Perfomance  | 316    | 33568      | 3235         |
+| 4    | [iobench] | Perfomance  | 317    | 36809      | 3222         |
+
+#### iobench 10 &; iobench 10 &; iobench 10 &
+
+| id   | type      | metric_name | metric | Start_tick | Elapsed_tick |
+| ---- | --------- | ----------- | ------ | ---------- | ------------ |
+| 10   | [iobench] | Perfomance  | 255    | 69210      | 4003         |
+| 10   | [iobench] | Perfomance  | 286    | 73227      | 3576         |
+| 10   | [iobench] | Perfomance  | 292    | 76814      | 3501         |
+| 10   | [iobench] | Perfomance  | 295    | 80333      | 3467         |
+| 10   | [iobench] | Perfomance  | 295    | 83816      | 3469         |
+| 10   | [iobench] | Perfomance  | 289    | 87304      | 3532         |
+| 10   | [iobench] | Perfomance  | 296    | 90859      | 3453         |
+| 10   | [iobench] | Perfomance  | 322    | 94322      | 3171         |
+| 10   | [iobench] | Perfomance  | 302    | 97503      | 3390         |
+| 10   | [iobench] | Perfomance  | 341    | 100911     | 2997         |
+
+| id   | type      | metric_name | metric | Start_tick | Elapsed_tick |
+| ---- | --------- | ----------- | ------ | ---------- | ------------ |
+| 9    | [iobench] | Perfomance  | 331    | 69205      | 3089         |
+| 9    | [iobench] | Perfomance  | 295    | 72310      | 3466         |
+| 9    | [iobench] | Perfomance  | 313    | 75791      | 3267         |
+| 9    | [iobench] | Perfomance  | 331    | 79066      | 3087         |
+| 9    | [iobench] | Perfomance  | 319    | 82168      | 3201         |
+| 9    | [iobench] | Perfomance  | 339    | 85386      | 3014         |
+| 9    | [iobench] | Perfomance  | 313    | 88412      | 3265         |
+| 9    | [iobench] | Perfomance  | 313    | 91693      | 3268         |
+| 9    | [iobench] | Perfomance  | 314    | 94975      | 3256         |
+| 9    | [iobench] | Perfomance  | 308    | 98247      | 3315         |
+
+| id   | type      | metric_name | metric | Start_tick | Elapsed_tick |
+| ---- | --------- | ----------- | ------ | ---------- | ------------ |
+| 7    | [iobench] | Perfomance  | 293    | 69204      | 3494         |
+| 7    | [iobench] | Perfomance  | 287    | 72709      | 3565         |
+| 7    | [iobench] | Perfomance  | 306    | 76289      | 3338         |
+| 7    | [iobench] | Perfomance  | 321    | 79642      | 3186         |
+| 7    | [iobench] | Perfomance  | 322    | 82841      | 3172         |
+| 7    | [iobench] | Perfomance  | 300    | 86030      | 3405         |
+| 7    | [iobench] | Perfomance  | 298    | 89452      | 3434         |
+| 7    | [iobench] | Perfomance  | 300    | 92908      | 3404         |
+| 7    | [iobench] | Perfomance  | 302    | 96322      | 3382         |
+| 7    | [iobench] | Perfomance  | 333    | 99722      | 3068         |
+
+#### cpubench 10 &
+
+| id   | type       | metric_name | metric | Start_tick | Elapsed_tick |
+| ---- | ---------- | ----------- | ------ | ---------- | ------------ |
+| 13   | [cpubench] | Perfomance  | 260598 | 132392     | 2060         |
+| 13   | [cpubench] | Perfomance  | 262766 | 134458     | 2043         |
+| 13   | [cpubench] | Perfomance  | 262381 | 136507     | 2046         |
+| 13   | [cpubench] | Perfomance  | 262125 | 138558     | 2048         |
+| 13   | [cpubench] | Perfomance  | 262766 | 140612     | 2043         |
+| 13   | [cpubench] | Perfomance  | 262253 | 142659     | 2047         |
+| 13   | [cpubench] | Perfomance  | 261741 | 144713     | 2051         |
+| 13   | [cpubench] | Perfomance  | 250038 | 146770     | 2147         |
+| 13   | [cpubench] | Perfomance  | 246253 | 148926     | 2180         |
+| 13   | [cpubench] | Perfomance  | 247160 | 151116     | 2172         |
+
+#### cpubench 10 &; cpubench 10 &; cpubench 10 &
+
+| id   | type       | metric_name | metric | Start_tick | Elapsed_tick |
+| ---- | ---------- | ----------- | ------ | ---------- | ------------ |
+| 16   | [cpubench] | Perfomance  | 94363  | 179722     | 5689         |
+| 16   | [cpubench] | Perfomance  | 94579  | 185435     | 5676         |
+| 16   | [cpubench] | Perfomance  | 94729  | 191129     | 5667         |
+| 16   | [cpubench] | Perfomance  | 94562  | 196817     | 5677         |
+| 16   | [cpubench] | Perfomance  | 94880  | 202512     | 5658         |
+| 16   | [cpubench] | Perfomance  | 94880  | 208188     | 5658         |
+| 16   | [cpubench] | Perfomance  | 94729  | 213858     | 5667         |
+| 16   | [cpubench] | Perfomance  | 94363  | 219543     | 5689         |
+| 16   | [cpubench] | Perfomance  | 94829  | 225251     | 5661         |
+| 16   | [cpubench] | Perfomance  | 95521  | 230933     | 5620         |
+
+| id   | type       | metric_name | metric | Start_tick | Elapsed_tick |
+| ---- | ---------- | ----------- | ------ | ---------- | ------------ |
+| 18   | [cpubench] | Perfomance  | 95014  | 179729     | 5650         |
+| 18   | [cpubench] | Perfomance  | 94880  | 185400     | 5658         |
+| 18   | [cpubench] | Perfomance  | 94829  | 191079     | 5661         |
+| 18   | [cpubench] | Perfomance  | 95267  | 196758     | 5635         |
+| 18   | [cpubench] | Perfomance  | 95081  | 202414     | 5646         |
+| 18   | [cpubench] | Perfomance  | 95081  | 208078     | 5646         |
+| 18   | [cpubench] | Perfomance  | 94980  | 213739     | 5652         |
+| 18   | [cpubench] | Perfomance  | 94829  | 219409     | 5661         |
+| 18   | [cpubench] | Perfomance  | 95014  | 225089     | 5650         |
+| 18   | [cpubench] | Perfomance  | 95182  | 230757     | 5640         |
+
+| id   | type       | metric_name | metric | Start_tick | Elapsed_tick |
+| ---- | ---------- | ----------- | ------ | ---------- | ------------ |
+| 19   | [cpubench] | Perfomance  | 88615  | 179736     | 6058         |
+| 19   | [cpubench] | Perfomance  | 88280  | 185818     | 6081         |
+| 19   | [cpubench] | Perfomance  | 87717  | 191923     | 6120         |
+| 19   | [cpubench] | Perfomance  | 88396  | 198064     | 6073         |
+| 19   | [cpubench] | Perfomance  | 87933  | 204155     | 6105         |
+| 19   | [cpubench] | Perfomance  | 87803  | 210287     | 6114         |
+| 19   | [cpubench] | Perfomance  | 88323  | 216419     | 6078         |
+| 19   | [cpubench] | Perfomance  | 88164  | 222518     | 6089         |
+| 19   | [cpubench] | Perfomance  | 87889  | 228622     | 6108         |
+| 19   | [cpubench] | Perfomance  | 166977 | 234751     | 3215         |
+
+#### iobench 10 &; cpubench 10 &; cpubench 10 &; cpubench 10 &
+
+| id   | type       | metric_name | metric | Start_tick | Elapsed_tick |
+| ---- | ---------- | ----------- | ------ | ---------- | ------------ |
+| 27   | [cpubench] | Perfomance  | 83801  | 270984     | 6406         |
+| 27   | [cpubench] | Perfomance  | 81984  | 277416     | 6548         |
+| 27   | [cpubench] | Perfomance  | 84248  | 283980     | 6372         |
+| 27   | [cpubench] | Perfomance  | 82222  | 290374     | 6529         |
+| 27   | [cpubench] | Perfomance  | 84129  | 296929     | 6381         |
+| 27   | [cpubench] | Perfomance  | 82235  | 303333     | 6528         |
+| 27   | [cpubench] | Perfomance  | 84580  | 309880     | 6347         |
+| 27   | [cpubench] | Perfomance  | 82475  | 316249     | 6509         |
+| 27   | [cpubench] | Perfomance  | 84473  | 322781     | 6355         |
+| 27   | [cpubench] | Perfomance  | 104523 | 329155     | 5136         |
+
+| id   | type       | metric_name | metric | Start_tick | Elapsed_tick |
+| ---- | ---------- | ----------- | ------ | ---------- | ------------ |
+| 26   | [cpubench] | Perfomance  | 89861  | 270979     | 5974         |
+| 26   | [cpubench] | Perfomance  | 89786  | 276979     | 5979         |
+| 26   | [cpubench] | Perfomance  | 89189  | 282985     | 6019         |
+| 26   | [cpubench] | Perfomance  | 90208  | 289020     | 5951         |
+| 26   | [cpubench] | Perfomance  | 89204  | 294994     | 6018         |
+| 26   | [cpubench] | Perfomance  | 90406  | 301029     | 5938         |
+| 26   | [cpubench] | Perfomance  | 89041  | 306994     | 6029         |
+| 26   | [cpubench] | Perfomance  | 90027  | 313047     | 5963         |
+| 26   | [cpubench] | Perfomance  | 88352  | 319036     | 6076         |
+| 26   | [cpubench] | Perfomance  | 91204  | 325137     | 5886         |
+
+| id   | type      | metric_name | metric | Start_tick | Elapsed_tick |
+| ---- | --------- | ----------- | ------ | ---------- | ------------ |
+| 22   | [iobench] | Perfomance  | 81     | 270977     | 12508        |
+| 22   | [iobench] | Perfomance  | 84     | 283509     | 12062        |
+| 22   | [iobench] | Perfomance  | 84     | 295591     | 12063        |
+| 22   | [iobench] | Perfomance  | 84     | 307678     | 12080        |
+| 22   | [iobench] | Perfomance  | 86     | 319778     | 11868        |
+| 22   | [iobench] | Perfomance  | 177    | 331664     | 5766         |
+| 22   | [iobench] | Perfomance  | 226    | 337448     | 4521         |
+| 22   | [iobench] | Perfomance  | 225    | 341979     | 4537         |
+| 22   | [iobench] | Perfomance  | 226    | 346524     | 4526         |
+| 22   | [iobench] | Perfomance  | 225    | 351059     | 4535         |
+
+| id   | type       | metric_name | metric | Start_tick | Elapsed_tick |
+| ---- | ---------- | ----------- | ------ | ---------- | ------------ |
+| 24   | [cpubench] | Perfomance  | 38048  | 270970     | 14109        |
+| 24   | [cpubench] | Perfomance  | 38632  | 285120     | 13896        |
+| 24   | [cpubench] | Perfomance  | 38394  | 299064     | 13982        |
+| 24   | [cpubench] | Perfomance  | 38657  | 313112     | 13887        |
+| 24   | [cpubench] | Perfomance  | 55711  | 327046     | 9636         |
+| 24   | [cpubench] | Perfomance  | 92637  | 336695     | 5795         |
+| 24   | [cpubench] | Perfomance  | 89041  | 342506     | 6029         |
+| 24   | [cpubench] | Perfomance  | 87318  | 348550     | 6148         |
+| 24   | [cpubench] | Perfomance  | 209291 | 354711     | 2565         |
+| 24   | [cpubench] | Perfomance  | 262509 | 357282     | 2045         |
+
+### cpubench 10 &; iobench 10 &; iobench 10 &; iobench 10 &
+
+| id   | type      | metric_name | metric | Start_tick | Elapsed_tick |
+| ---- | --------- | ----------- | ------ | ---------- | ------------ |
+| 34   | [iobench] | Perfomance  | 220    | 399625     | 4645         |
+| 34   | [iobench] | Perfomance  | 235    | 404298     | 4342         |
+| 34   | [iobench] | Perfomance  | 258    | 408682     | 3958         |
+| 34   | [iobench] | Perfomance  | 264    | 412655     | 3876         |
+| 34   | [iobench] | Perfomance  | 227    | 416553     | 4496         |
+| 34   | [iobench] | Perfomance  | 229    | 421057     | 4458         |
+| 34   | [iobench] | Perfomance  | 211    | 425536     | 4831         |
+| 34   | [iobench] | Perfomance  | 248    | 430390     | 4121         |
+| 34   | [iobench] | Perfomance  | 303    | 434526     | 3373         |
+| 34   | [iobench] | Perfomance  | 318    | 437914     | 3213         |
+
+| id   | type      | metric_name | metric | Start_tick | Elapsed_tick |
+| ---- | --------- | ----------- | ------ | ---------- | ------------ |
+| 32   | [iobench] | Perfomance  | 280    | 399620     | 3649         |
+| 32   | [iobench] | Perfomance  | 294    | 403287     | 3472         |
+| 32   | [iobench] | Perfomance  | 296    | 406776     | 3448         |
+| 32   | [iobench] | Perfomance  | 346    | 410238     | 2955         |
+| 32   | [iobench] | Perfomance  | 295    | 413211     | 3471         |
+| 32   | [iobench] | Perfomance  | 355    | 416699     | 2882         |
+| 32   | [iobench] | Perfomance  | 334    | 419591     | 3057         |
+| 32   | [iobench] | Perfomance  | 308    | 422661     | 3314         |
+| 32   | [iobench] | Perfomance  | 345    | 425997     | 2966         |
+| 32   | [iobench] | Perfomance  | 332    | 428980     | 3081         |
+
+| id   | type      | metric_name | metric | Start_tick | Elapsed_tick |
+| ---- | --------- | ----------- | ------ | ---------- | ------------ |
+| 35   | [iobench] | Perfomance  | 208    | 399628     | 4918         |
+| 35   | [iobench] | Perfomance  | 222    | 404561     | 4610         |
+| 35   | [iobench] | Perfomance  | 195    | 409212     | 5248         |
+| 35   | [iobench] | Perfomance  | 217    | 414488     | 4716         |
+| 35   | [iobench] | Perfomance  | 204    | 419244     | 5003         |
+| 35   | [iobench] | Perfomance  | 213    | 424277     | 4787         |
+| 35   | [iobench] | Perfomance  | 230    | 429103     | 4433         |
+| 35   | [iobench] | Perfomance  | 267    | 433558     | 3834         |
+| 35   | [iobench] | Perfomance  | 280    | 437413     | 3657         |
+| 35   | [iobench] | Perfomance  | 225    | 441090     | 4542         |
+
+| id   | type       | metric_name | metric | Start_tick | Elapsed_tick |
+| ---- | ---------- | ----------- | ------ | ---------- | ------------ |
+| 30   | [cpubench] | Perfomance  | 70990  | 399600     | 7562         |
+| 30   | [cpubench] | Perfomance  | 78922  | 407181     | 6802         |
+| 30   | [cpubench] | Perfomance  | 78312  | 413998     | 6855         |
+| 30   | [cpubench] | Perfomance  | 77554  | 420866     | 6922         |
+| 30   | [cpubench] | Perfomance  | 88338  | 427802     | 6077         |
+| 30   | [cpubench] | Perfomance  | 81959  | 433896     | 6550         |
+| 30   | [cpubench] | Perfomance  | 98141  | 440455     | 5470         |
+| 30   | [cpubench] | Perfomance  | 262766 | 445934     | 2043         |
+| 30   | [cpubench] | Perfomance  | 262125 | 447985     | 2048         |
+| 30   | [cpubench] | Perfomance  | 262125 | 450039     | 2048         |
+
+### ¿Fue necesario modificar las métricas para que los resultados fueran comparables? ¿Por qué?
+
+(completar con las mtricas modificadas en caso de que asi sea)
+
+### ¿Qué cambios se observan con respecto al experimento anterior? ¿Qué comportamientos se mantienen iguales?
+
+El cambio mas notorio que se puede observar entre los experimentos es que, en el experimento 1, los procesos cpubound tenian elapsed_ticks  demasiados estables indistintamente si tenian procesos cpubound o  iobound en paralelo. En el experimento 2 podemos ver que esto cambia  drasticamente cuando hay experimentos del tipo iobound ejecutandose en  paralelo, por ejemplo: 
+
+Comparemos "cpubench 10 &; iobench 10 &; iobench 10 &;  iobench 10 &" del experimento 1 con el mismo pero del experimento 2.
+
+(Experimento 1)
+
+| id   | Type       | name_metric | Metric                                                       | Start_tick | Elapsed_tick |
+| ---- | ---------- | ----------- | ------------------------------------------------------------ | ---------- | ------------ |
+| 5    | [cpubench] | Perfomance  | [2949626](https://bitbucket.org/sistop-famaf/so24lab3g03/commits/2949626) | 3158       | 182          |
+| 5    | [cpubench] | Perfomance  | [2982400](https://bitbucket.org/sistop-famaf/so24lab3g03/commits/2982400) | 3341       | 180          |
+| 5    | [cpubench] | Perfomance  | [2965922](https://bitbucket.org/sistop-famaf/so24lab3g03/commits/2965922) | 3522       | 181          |
+| 5    | [cpubench] | Perfomance  | [2982400](https://bitbucket.org/sistop-famaf/so24lab3g03/commits/2982400) | 3704       | 180          |
+| 5    | [cpubench] | Perfomance  | [2949626](https://bitbucket.org/sistop-famaf/so24lab3g03/commits/2949626) | 3884       | 182          |
+| 5    | [cpubench] | Perfomance  | [2670805](https://bitbucket.org/sistop-famaf/so24lab3g03/commits/2670805) | 4067       | 201          |
+| 5    | [cpubench] | Perfomance  | [2901794](https://bitbucket.org/sistop-famaf/so24lab3g03/commits/2901794) | 4268       | 185          |
+| 5    | [cpubench] | Perfomance  | [2933508](https://bitbucket.org/sistop-famaf/so24lab3g03/commits/2933508) | 4454       | 183          |
+| 5    | [cpubench] | Perfomance  | [2982400](https://bitbucket.org/sistop-famaf/so24lab3g03/commits/2982400) | 4638       | 180          |
+| 5    | [cpubench] | Perfomance  | [2508560](https://bitbucket.org/sistop-famaf/so24lab3g03/commits/2508560) | 4818       | 214          |
+
+(Experimento 2)
+
+| id   | type       | metric_name | metric | Start_tick | Elapsed_tick |
+| ---- | ---------- | ----------- | ------ | ---------- | ------------ |
+| 30   | [cpubench] | Perfomance  | 70990  | 399600     | 7562         |
+| 30   | [cpubench] | Perfomance  | 78922  | 407181     | 6802         |
+| 30   | [cpubench] | Perfomance  | 78312  | 413998     | 6855         |
+| 30   | [cpubench] | Perfomance  | 77554  | 420866     | 6922         |
+| 30   | [cpubench] | Perfomance  | 88338  | 427802     | 6077         |
+| 30   | [cpubench] | Perfomance  | 81959  | 433896     | 6550         |
+| 30   | [cpubench] | Perfomance  | 98141  | 440455     | 5470         |
+| 30   | [cpubench] | Perfomance  | 262766 | 445934     | 2043         |
+| 30   | [cpubench] | Perfomance  | 262125 | 447985     | 2048         |
+| 30   | [cpubench] | Perfomance  | 262125 | 450039     | 2048         |
+
+En ambos casos, estos procesos CPU-bound tienen corriéndose en  paralelo 3 procesos iobound. Mientras que en el primero los  elapsed_ticks se mantienen estables, en el segundo vemos que estos  varían desde 2048 hasta 7562. Esto es un cambio bastante considerable  que ocurre si se achica el quantum; el porqué ocurre eso está respondido más abajo.
+
+Este mismo fenómeno ocurre cuando se comparan también las tablas  "iobench 10 &; cpubench 10 &; cpubench 10 &; cpubench 10  &" del experimento 1 y 2. Mientras que los del cpubound del  experimento 1 se mantienen estables, hay un proceso cpubound del  experimento 2 que tiene una gran variabilidad en sus elapsed_ticks.
+
+Notemos también que cuando se ejecutan solo procesos de un mismo  tipo, los resultados de ambos experimentos no se ven modificados, es  decir, se mantienen iguales en cuanto a comportamiento.
+
+### ¿Con un quantum más pequeño, se ven beneficiados los procesos iobound o los procesos cpubound?
+
+Los procesos beneficiados con un quantum más chico son los procesos  iobound, ya que estos pasan más tiempo en general esperando por los  recursos de I/O que ejecutándose dentro de la CPU. Al achicar el  quantum, esto genera que, una vez terminen sus operaciones de I/O,  tengan la CPU más rápidamente, mejorando así el tiempo de respuesta de  estos procesos.
+
+Los procesos cpubound, por su lado, no se ven beneficiados ante este  cambio, ya que al tener un quantum más chico significa que serán más  frecuentes los cambios de contexto y, al necesitar un largo período de  tiempo en CPU para avanzar de una manera significativa en su ejecución,  estos procesos no mejorarán su rendimiento. Es más, podrían estar más  tiempo en cambios de contexto que en procesamiento, lo cual reduciría su eficiencia.
+
+## Tercera Parte: Asignar prioridad a los procesos
+
+En esta seccion del laboratorio, se modificaron varias funciones de `proc.c` y se modifico la estructura **proc** de `proc.h`:
+Primero que nada veamos los cambios realizados en la estructura *proc*:
+```c
+ //MLFQ fields 
+  uint32 priority;
+  uint32 count_sched;
+  int quantum_used;
+```
+siendo, priority la prioridad de cada proceso, count_sched la cantidad de veces que el proceso ha sido planificado, y quantum_used un parametro `int` que usaremos como **booleano** para determinar si el quantum ha sido utilizado en su totalidad.
+
+MLFQ regla 3: Cuando un proceso se inicia, su prioridad será máxima.
+	Para esta parte, en nos dirigimos a la funcion *allocproc()* que es la encargada de "inicializar" de alguna manera los procesos `UNUSED`, asi que agregamos estas sentencias:
+  ```c
+    // Initialize MLFQ fields
+  p->priority = NPRIO - 1; // Highest priority
+  p->count_sched = 0;
+  p->quantum_used = 0; 
+  ```
+MLFQ regla 4: Descender de prioridad cada vez que el proceso pasa todo un quantum realizando cómputo. Ascender de prioridad cada vez que el proceso se bloquea antes de terminar su quantum. Nota: Este comportamiento es distinto al del MLFQ del libro.
+	Para esta parte hicimos en scheduler. Luego de que se haga swtch()
+	pusimos estas sentencias:
+```c
+	        if (p->quantum_used)
+        {
+          if (p->priority > 0)
+          {
+            p->priority--;
+          }
+        }
+        if (!p->quantum_used)
+        {
+          if (p->priority < NPRIO - 1)
+          {
+            p->priority++;
+          }
+        }
+```
+esto evalua lo que queremos en base a si el quantum ha sido o no, utilizado en su completitud.
+Y es de naturaleza preguntarnos, Como sabemos si el quantum ha sido utilizado o no en su totalidad?
+Bueno para responder esta pregunta propusimos la siguiente solucion.
+Notemos que en *allocproc()* tambien se inicializa este nuevo campo de proc,
+`proc->quauntum_used = 0` evidentemente esto indica, que cuando el proceso no ha sido planificado, no ha usado quantum, ya que obviamente, tampoco ha sido ejecutado.
+Luego en la funcion *sleep()* antes de que esta llame a *sched()* hacemos esta misma asignacion `proc->quauntum_used = 0` esto quiere decir que si el proceso se manda a dormir, es decir, que no utiliza su quantum completamente seteamos en 0 esta variable.
+Ahora bien, cuando es verdadera?
+En nuestra funcion *scheduler()* antes de que se haga el CS, llamando a swtch(), hacemos la siguiente asignacion: `proc->quauntum_used = 1`, es decir que el proceso a penas se esta por correr lo seteamos en que utilizara el quantum, es la funcion **sleep()** la encargada de  "desetear" esta asignacion y ponerlo en 0, en caso de no utlizarce el quantum completamente.
+
+## Cuarta Parte: Implementar MLFQ
+### 1. Modifique el planificador de manera que seleccione el próximo proceso a planificar 	 siguiendo las siguientes reglas:
+##### MLFQ regla 1: Si el proceso A tiene mayor prioridad que el proceso B, corre A. (y no B)
+##### MLFQ regla 2: Si dos procesos A y B tienen la misma prioridad, corre el que menos veces fue elegido por el  planificador.
+
+Para esta parte(regla 1 y 2) creamos una nueva funcion con el objetivo de darle cierta modulzarizacion a nuestra implementacion:
+```c
+struct proc *
+find_highest_priority_proc(void)
+{
+  struct proc *p, *highest_priority_proc = 0;
+
+  for (p = proc; p < &proc[NPROC]; p++)
+  {
+    acquire(&p->lock);
+    if (p->state == RUNNABLE)
+    {
+      if (highest_priority_proc == 0 || p->priority > highest_priority_proc->priority || (p->priority == highest_priority_proc->priority && p->count_sched < highest_priority_proc->count_sched))
+      {
+        highest_priority_proc = p;
+      }
+    }
+    release(&p->lock);
+  }
+
+  return highest_priority_proc;
+}
+```
+Esta funcion lo que hace, como lo dice su nombre, es buscar el proceso con mayor prioridad dentro del array *proc* , y como esta funcion es invocada en *scheduler()* el proceso que elegira sera el que se ejecutara por el procesador.
+
+1. **Inicialización**:
+   - Se definen dos punteros a `struct proc`: `p`, que se usará para iterar sobre el array de procesos, y `highest_priority_proc`, que almacenará el proceso con la prioridad más alta encontrado hasta el momento. Inicialmente, `highest_priority_proc` se establece en `0` .
+
+2. **Adquisición del bloqueo del proceso**:
+   - Para cada proceso `p`, se adquiere su bloqueo (`acquire(&p->lock)`) para asegurar una operación atómica y evitar condiciones de carrera.
+
+3. **Verificación del estado del proceso**:
+   - Se verifica si el estado del proceso `p` es `RUNNABLE`.
+
+4. **Comparación de prioridades**:
+   - Si `highest_priority_proc` es `0` (indica que aún no se ha encontrado un proceso `RUNNABLE`), o
+   - Si la prioridad del proceso actual `p` es mayor que la prioridad del `highest_priority_proc`, o
+   - Si la prioridad del proceso actual `p` es igual a la prioridad del `highest_priority_proc`, pero el proceso actual `p` ha sido programado menos veces (`count_sched`) que `highest_priority_proc`,
+   - Entonces, `highest_priority_proc` se actualiza para apuntar al proceso actual `p`.
+
+5. **Liberación del bloqueo del proceso**:
+   - Se libera el bloqueo del proceso actual (`release(&p->lock)`).
+
+6. **Retorno del proceso con la prioridad más alta**:
+   - Después de recorrer todos los procesos, la función devuelve el puntero `highest_priority_proc`, que apunta al proceso con la prioridad más alta entre los procesos `RUNNABLE`.
+
+- Recorre la tabla de procesos.
+- Adquiere el bloqueo de cada proceso.
+- Compara prioridades para encontrar el proceso `RUNNABLE` con la prioridad más alta.
+- Considera también el número de veces que el proceso ha sido programado en caso de empate en la prioridad.
+- Devuelve el proceso encontrado con la prioridad más alta.
+Esta función es clave para implementar un planificador que seleccione el proceso más prioritario de manera justa y eficiente, considerando tanto la prioridad como el balanceo de cargas entre procesos de igual prioridad.
 
 
-(REVISAR Y/O CAMBIAR A GUSTO PROPIO LAS RESPUESTAS 3 4 Y 5 SI NO LES GUSTA ALGUNA PARTE)
+
+### 2. Repita las mediciones de la segunda parte para ver las propiedades del nuevo planificador.
+
+### 3. Para análisis responda: ¿Se puede producir *starvation* en el nuevo planificador? Justifique su respuesta.
