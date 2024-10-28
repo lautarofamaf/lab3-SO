@@ -869,6 +869,7 @@ El cambio mas notorio que se puede observar entre los experimentos es que, en el
 Comparemos "cpubench 10 &; iobench 10 &; iobench 10 &; iobench 10 &" del experimento 1 con el mismo pero del experimento 2.
 
 (Experimento 1)
+
 | id | Type       | name_metric | Metric  | Start_tick | Elapsed_tick |
 |----|------------|-------------|---------|------------|--------------|
 | 5  | [cpubench] | Perfomance  | 2949626 | 3158       | 182          |
@@ -884,6 +885,7 @@ Comparemos "cpubench 10 &; iobench 10 &; iobench 10 &; iobench 10 &" del experim
 
 
 (Experimento 2)
+
 | id | type       | metric_name | metric | Start_tick | Elapsed_tick |
 |----|------------|-------------|--------|------------|--------------|
 | 30 | [cpubench] | Perfomance  | 70990  | 399600     | 7562         |
