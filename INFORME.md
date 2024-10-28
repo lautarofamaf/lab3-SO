@@ -561,7 +561,7 @@ Conclusion:  Los procesos iobound si se ven afectados en rendimientos por los pr
 
 Esta pregunta es mas facil de responder que la anterior. Podemos decir que los procesos cpubound no se ven casi afectados por los procesos iobound ya que como estos (cpubound) tienden a dominar el cpu, no necesitan tantos ticks si solo hay procesos iobound. Podemos ver esto comparando los elapsed_tick del cpubench en "cpubench 10 &; iobench10 &; iobench10 &; iobench 10 &;" y los de "cpubench 10 &;" notando así que no hay una gran diferencia.
 
-Ahora bien, si hay otros procesos cpubound esto puede cambiar. 
+Ahora bien, si hay otros procesos cpubound, ¿esto puede llegar a cambiar?, veamosló a continuacion. 
 Analicemos la tabla : "iobench 10 &; cpubench 10 &; cpubench 10 &; cpubench 10 &
 
 Lo mas llamativo de esta tabla es la parte del proceso con id (23): 
@@ -592,9 +592,9 @@ Analizando todos los otros procesos nos dimos cuenta que el start_tick de la ult
 |----|------------|-------------|---------|------------|--------------|
 | 25 | [cpubench] | Perfomance  | 1118400 | 35208      | 480          |
 
-Como los end_tick de estos procesos son 35712 y 35688 respectivamente y el end_tick del proceso 23 es 35825, este ultimo proceso estuvo aproximadamente 137 ticks sin ningun otro proceso cpubound en paralelo, solo tenia un proceso iobound en paralelo pero como vimos no afecta considerablemente el rendimiento. Ahora si observamos la metrica de este ultimo proceso cpubound nos damos cuenta de que aumento un poco su metrica considerando las metricas que se obervaron cuando habia cpubounds en paralelo, por lo que podemos decir que si afectan ligeramente el rendimiento. A parte podemos notar que los elapsed_tick de los cpubound de la tabla que analizamos son un poco mayor a los elapsed_tick de la tabla "cpubench 10 &", lo que tambien nos da un indicio que los procesos cpubound suelen reducir un poco su rendimiento cuando hay otros procesos del mismo tipo ejecutandose en paralelo. Por ultimo podemos notar que si bien aumenta el elapsed_tick de una tabla  a la otra, la variabilidad sigue siendo bastante consistente en ambas tablas, es decir que observando el primer elapsed_tick de una tabla, los siguientes elapsed_tick van a caer en un rango bastante predecible.
+Como los end_tick de estos procesos son 35712 y 35688 respectivamente y el end_tick del proceso 23 es 35825, este ultimo proceso estuvo aproximadamente 137 ticks sin ningun otro proceso cpubound en paralelo, solo tenia un proceso iobound en paralelo pero como vimos no afecta considerablemente el rendimiento. Ahora si observamos la metrica de este ultimo proceso cpubound nos damos cuenta de que aumento un poco su metrica considerando las metricas que se obervaron cuando habia cpubounds en paralelo, por lo que podemos decir que, si el proceso cpubound está solo demora mucho menos tiempo en ejecutarse. Esto es algo bastante logico dado que ese proceso en particular no compite por recursos de la cpu con nigun otro proceso cpuboud, pero, afecta el rendimiento de dicho proceso el tener mas procesos cpubound en paralelo?. Podemos notar que los elapsed_tick de los cpubound de la tabla que analizamos son un poco mayor a los elapsed_tick de la tabla "cpubench 10 &" pero, si bien aumenta el elapsed_tick de una tabla  a la otra, la variabilidad sigue siendo bastante consistente en ambas tablas, es decir que observando el primer elapsed_tick de una tabla, los siguientes elapsed_tick van a caer en un rango bastante predecible. Esto nos quiere decir que los procesos cpubound mantienen un rendimiento estable con respecto al tiempo que tiene cada uno para ejecutarse, por lo que mas allá de los ticks extras que necesiten para terminar su ejecucion, el rendimiento es bastante consistente, es decir, casi no cambia. 
 
-Conclusion: Los procesos cpubound pueden reducir un poco su rendimiento necesitando mas ticks para acabar su ejecucion cuando hay otros procesos cpubound en paralelo. Esto se debe de que hay mas procesos compitiendo por los recursos de computo de la cpu. Así y todo, los procesos cpubound mantienen sus elapsed_tick estables, que nos muestra como el sistema operativo reparte los recursos de una manera justa y predecible. 
+Conclusion: Los procesos cpubound pueden necesitar mas ticks para acabar su ejecucion cuando hay otros procesos cpubound e iobound en paralelo, pero esto no necesariamente hace que cambie su rendimiento, si no que siguen aprovechando de igual forma los recursos de la cpu en el pequeñp tiempo (quantum) que se les da de ejecución.
 
 
 
@@ -604,4 +604,311 @@ No es adecuado hacer esta comparacion, que los procesos cpubound solo necesitan 
 
 
 
-(REVISAR Y/O CAMBIAR A GUSTO PROPIO LAS RESPUESTAS 3 4 Y 5 SI NO LES GUSTA ALGUNA PARTE)
+
+
+
+
+### Experimento 2: ¿Qué sucede cuando cambiamos el largo del quantum?
+
+#### Resultados de experimento 2:
+
+(poner el quatum con el que se dieron estas mediciones)
+
+#### iobench 10 &
+| id | type      | metric_name | metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 4  | [iobench] | Perfomance  | 306    | 7550       | 3345         |
+| 4  | [iobench] | Perfomance  | 316    | 10901      | 3234         |
+| 4  | [iobench] | Perfomance  | 316    | 14141      | 3233         |
+| 4  | [iobench] | Perfomance  | 316    | 17379      | 3232         |
+| 4  | [iobench] | Perfomance  | 315    | 20616      | 3241         |
+| 4  | [iobench] | Perfomance  | 316    | 23862      | 3232         |
+| 4  | [iobench] | Perfomance  | 316    | 27098      | 3233         |
+| 4  | [iobench] | Perfomance  | 317    | 30338      | 3225         |
+| 4  | [iobench] | Perfomance  | 316    | 33568      | 3235         |
+| 4  | [iobench] | Perfomance  | 317    | 36809      | 3222         |
+
+
+
+
+#### iobench 10 &; iobench 10 &; iobench 10 &
+| id | type      | metric_name | metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 10 | [iobench] | Perfomance  | 255    | 69210      | 4003         |
+| 10 | [iobench] | Perfomance  | 286    | 73227      | 3576         |
+| 10 | [iobench] | Perfomance  | 292    | 76814      | 3501         |
+| 10 | [iobench] | Perfomance  | 295    | 80333      | 3467         |
+| 10 | [iobench] | Perfomance  | 295    | 83816      | 3469         |
+| 10 | [iobench] | Perfomance  | 289    | 87304      | 3532         |
+| 10 | [iobench] | Perfomance  | 296    | 90859      | 3453         |
+| 10 | [iobench] | Perfomance  | 322    | 94322      | 3171         |
+| 10 | [iobench] | Perfomance  | 302    | 97503      | 3390         |
+| 10 | [iobench] | Perfomance  | 341    | 100911     | 2997         |
+
+
+| id | type      | metric_name | metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 9  | [iobench] | Perfomance  | 331    | 69205      | 3089         |
+| 9  | [iobench] | Perfomance  | 295    | 72310      | 3466         |
+| 9  | [iobench] | Perfomance  | 313    | 75791      | 3267         |
+| 9  | [iobench] | Perfomance  | 331    | 79066      | 3087         |
+| 9  | [iobench] | Perfomance  | 319    | 82168      | 3201         |
+| 9  | [iobench] | Perfomance  | 339    | 85386      | 3014         |
+| 9  | [iobench] | Perfomance  | 313    | 88412      | 3265         |
+| 9  | [iobench] | Perfomance  | 313    | 91693      | 3268         |
+| 9  | [iobench] | Perfomance  | 314    | 94975      | 3256         |
+| 9  | [iobench] | Perfomance  | 308    | 98247      | 3315         |
+
+
+| id | type      | metric_name | metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 7  | [iobench] | Perfomance  | 293    | 69204      | 3494         |
+| 7  | [iobench] | Perfomance  | 287    | 72709      | 3565         |
+| 7  | [iobench] | Perfomance  | 306    | 76289      | 3338         |
+| 7  | [iobench] | Perfomance  | 321    | 79642      | 3186         |
+| 7  | [iobench] | Perfomance  | 322    | 82841      | 3172         |
+| 7  | [iobench] | Perfomance  | 300    | 86030      | 3405         |
+| 7  | [iobench] | Perfomance  | 298    | 89452      | 3434         |
+| 7  | [iobench] | Perfomance  | 300    | 92908      | 3404         |
+| 7  | [iobench] | Perfomance  | 302    | 96322      | 3382         |
+| 7  | [iobench] | Perfomance  | 333    | 99722      | 3068         |
+
+
+
+
+#### cpubench 10 &
+| id | type       | metric_name | metric | Start_tick | Elapsed_tick |
+|----|------------|-------------|--------|------------|--------------|
+| 13 | [cpubench] | Perfomance  | 260598 | 132392     | 2060         |
+| 13 | [cpubench] | Perfomance  | 262766 | 134458     | 2043         |
+| 13 | [cpubench] | Perfomance  | 262381 | 136507     | 2046         |
+| 13 | [cpubench] | Perfomance  | 262125 | 138558     | 2048         |
+| 13 | [cpubench] | Perfomance  | 262766 | 140612     | 2043         |
+| 13 | [cpubench] | Perfomance  | 262253 | 142659     | 2047         |
+| 13 | [cpubench] | Perfomance  | 261741 | 144713     | 2051         |
+| 13 | [cpubench] | Perfomance  | 250038 | 146770     | 2147         |
+| 13 | [cpubench] | Perfomance  | 246253 | 148926     | 2180         |
+| 13 | [cpubench] | Perfomance  | 247160 | 151116     | 2172         |
+
+
+
+
+#### cpubench 10 &; cpubench 10 &; cpubench 10 &
+| id | type       | metric_name | metric | Start_tick | Elapsed_tick |
+|----|------------|-------------|--------|------------|--------------|
+| 16 | [cpubench] | Perfomance  | 94363  | 179722     | 5689         |
+| 16 | [cpubench] | Perfomance  | 94579  | 185435     | 5676         |
+| 16 | [cpubench] | Perfomance  | 94729  | 191129     | 5667         |
+| 16 | [cpubench] | Perfomance  | 94562  | 196817     | 5677         |
+| 16 | [cpubench] | Perfomance  | 94880  | 202512     | 5658         |
+| 16 | [cpubench] | Perfomance  | 94880  | 208188     | 5658         |
+| 16 | [cpubench] | Perfomance  | 94729  | 213858     | 5667         |
+| 16 | [cpubench] | Perfomance  | 94363  | 219543     | 5689         |
+| 16 | [cpubench] | Perfomance  | 94829  | 225251     | 5661         |
+| 16 | [cpubench] | Perfomance  | 95521  | 230933     | 5620         |
+
+
+| id | type       | metric_name | metric | Start_tick | Elapsed_tick |
+|----|------------|-------------|--------|------------|--------------|
+| 18 | [cpubench] | Perfomance  | 95014  | 179729     | 5650         |
+| 18 | [cpubench] | Perfomance  | 94880  | 185400     | 5658         |
+| 18 | [cpubench] | Perfomance  | 94829  | 191079     | 5661         |
+| 18 | [cpubench] | Perfomance  | 95267  | 196758     | 5635         |
+| 18 | [cpubench] | Perfomance  | 95081  | 202414     | 5646         |
+| 18 | [cpubench] | Perfomance  | 95081  | 208078     | 5646         |
+| 18 | [cpubench] | Perfomance  | 94980  | 213739     | 5652         |
+| 18 | [cpubench] | Perfomance  | 94829  | 219409     | 5661         |
+| 18 | [cpubench] | Perfomance  | 95014  | 225089     | 5650         |
+| 18 | [cpubench] | Perfomance  | 95182  | 230757     | 5640         |
+
+
+| id | type       | metric_name | metric | Start_tick | Elapsed_tick |
+|----|------------|-------------|--------|------------|--------------|
+| 19 | [cpubench] | Perfomance  | 88615  | 179736     | 6058         |
+| 19 | [cpubench] | Perfomance  | 88280  | 185818     | 6081         |
+| 19 | [cpubench] | Perfomance  | 87717  | 191923     | 6120         |
+| 19 | [cpubench] | Perfomance  | 88396  | 198064     | 6073         |
+| 19 | [cpubench] | Perfomance  | 87933  | 204155     | 6105         |
+| 19 | [cpubench] | Perfomance  | 87803  | 210287     | 6114         |
+| 19 | [cpubench] | Perfomance  | 88323  | 216419     | 6078         |
+| 19 | [cpubench] | Perfomance  | 88164  | 222518     | 6089         |
+| 19 | [cpubench] | Perfomance  | 87889  | 228622     | 6108         |
+| 19 | [cpubench] | Perfomance  | 166977 | 234751     | 3215         |
+
+
+
+
+#### iobench 10 &; cpubench 10 &; cpubench 10 &; cpubench 10 &
+| id | type       | metric_name | metric | Start_tick | Elapsed_tick |
+|----|------------|-------------|--------|------------|--------------|
+| 27 | [cpubench] | Perfomance  | 83801  | 270984     | 6406         |
+| 27 | [cpubench] | Perfomance  | 81984  | 277416     | 6548         |
+| 27 | [cpubench] | Perfomance  | 84248  | 283980     | 6372         |
+| 27 | [cpubench] | Perfomance  | 82222  | 290374     | 6529         |
+| 27 | [cpubench] | Perfomance  | 84129  | 296929     | 6381         |
+| 27 | [cpubench] | Perfomance  | 82235  | 303333     | 6528         |
+| 27 | [cpubench] | Perfomance  | 84580  | 309880     | 6347         |
+| 27 | [cpubench] | Perfomance  | 82475  | 316249     | 6509         |
+| 27 | [cpubench] | Perfomance  | 84473  | 322781     | 6355         |
+| 27 | [cpubench] | Perfomance  | 104523 | 329155     | 5136         |
+
+
+| id | type       | metric_name | metric | Start_tick | Elapsed_tick |
+|----|------------|-------------|--------|------------|--------------|
+| 26 | [cpubench] | Perfomance  | 89861  | 270979     | 5974         |
+| 26 | [cpubench] | Perfomance  | 89786  | 276979     | 5979         |
+| 26 | [cpubench] | Perfomance  | 89189  | 282985     | 6019         |
+| 26 | [cpubench] | Perfomance  | 90208  | 289020     | 5951         |
+| 26 | [cpubench] | Perfomance  | 89204  | 294994     | 6018         |
+| 26 | [cpubench] | Perfomance  | 90406  | 301029     | 5938         |
+| 26 | [cpubench] | Perfomance  | 89041  | 306994     | 6029         |
+| 26 | [cpubench] | Perfomance  | 90027  | 313047     | 5963         |
+| 26 | [cpubench] | Perfomance  | 88352  | 319036     | 6076         |
+| 26 | [cpubench] | Perfomance  | 91204  | 325137     | 5886         |
+
+
+| id | type      | metric_name | metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 22 | [iobench] | Perfomance  | 81     | 270977     | 12508        |
+| 22 | [iobench] | Perfomance  | 84     | 283509     | 12062        |
+| 22 | [iobench] | Perfomance  | 84     | 295591     | 12063        |
+| 22 | [iobench] | Perfomance  | 84     | 307678     | 12080        |
+| 22 | [iobench] | Perfomance  | 86     | 319778     | 11868        |
+| 22 | [iobench] | Perfomance  | 177    | 331664     | 5766         |
+| 22 | [iobench] | Perfomance  | 226    | 337448     | 4521         |
+| 22 | [iobench] | Perfomance  | 225    | 341979     | 4537         |
+| 22 | [iobench] | Perfomance  | 226    | 346524     | 4526         |
+| 22 | [iobench] | Perfomance  | 225    | 351059     | 4535         |
+
+
+| id | type       | metric_name | metric | Start_tick | Elapsed_tick |
+|----|------------|-------------|--------|------------|--------------|
+| 24 | [cpubench] | Perfomance  | 38048  | 270970     | 14109        |
+| 24 | [cpubench] | Perfomance  | 38632  | 285120     | 13896        |
+| 24 | [cpubench] | Perfomance  | 38394  | 299064     | 13982        |
+| 24 | [cpubench] | Perfomance  | 38657  | 313112     | 13887        |
+| 24 | [cpubench] | Perfomance  | 55711  | 327046     | 9636         |
+| 24 | [cpubench] | Perfomance  | 92637  | 336695     | 5795         |
+| 24 | [cpubench] | Perfomance  | 89041  | 342506     | 6029         |
+| 24 | [cpubench] | Perfomance  | 87318  | 348550     | 6148         |
+| 24 | [cpubench] | Perfomance  | 209291 | 354711     | 2565         |
+| 24 | [cpubench] | Perfomance  | 262509 | 357282     | 2045         |
+
+
+
+
+### cpubench 10 &; iobench 10 &; iobench 10 &; iobench 10 &
+| id | type      | metric_name | metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 34 | [iobench] | Perfomance  | 220    | 399625     | 4645         |
+| 34 | [iobench] | Perfomance  | 235    | 404298     | 4342         |
+| 34 | [iobench] | Perfomance  | 258    | 408682     | 3958         |
+| 34 | [iobench] | Perfomance  | 264    | 412655     | 3876         |
+| 34 | [iobench] | Perfomance  | 227    | 416553     | 4496         |
+| 34 | [iobench] | Perfomance  | 229    | 421057     | 4458         |
+| 34 | [iobench] | Perfomance  | 211    | 425536     | 4831         |
+| 34 | [iobench] | Perfomance  | 248    | 430390     | 4121         |
+| 34 | [iobench] | Perfomance  | 303    | 434526     | 3373         |
+| 34 | [iobench] | Perfomance  | 318    | 437914     | 3213         |
+
+
+| id | type      | metric_name | metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 32 | [iobench] | Perfomance  | 280    | 399620     | 3649         |
+| 32 | [iobench] | Perfomance  | 294    | 403287     | 3472         |
+| 32 | [iobench] | Perfomance  | 296    | 406776     | 3448         |
+| 32 | [iobench] | Perfomance  | 346    | 410238     | 2955         |
+| 32 | [iobench] | Perfomance  | 295    | 413211     | 3471         |
+| 32 | [iobench] | Perfomance  | 355    | 416699     | 2882         |
+| 32 | [iobench] | Perfomance  | 334    | 419591     | 3057         |
+| 32 | [iobench] | Perfomance  | 308    | 422661     | 3314         |
+| 32 | [iobench] | Perfomance  | 345    | 425997     | 2966         |
+| 32 | [iobench] | Perfomance  | 332    | 428980     | 3081         |
+
+
+| id | type      | metric_name | metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 35 | [iobench] | Perfomance  | 208    | 399628     | 4918         |
+| 35 | [iobench] | Perfomance  | 222    | 404561     | 4610         |
+| 35 | [iobench] | Perfomance  | 195    | 409212     | 5248         |
+| 35 | [iobench] | Perfomance  | 217    | 414488     | 4716         |
+| 35 | [iobench] | Perfomance  | 204    | 419244     | 5003         |
+| 35 | [iobench] | Perfomance  | 213    | 424277     | 4787         |
+| 35 | [iobench] | Perfomance  | 230    | 429103     | 4433         |
+| 35 | [iobench] | Perfomance  | 267    | 433558     | 3834         |
+| 35 | [iobench] | Perfomance  | 280    | 437413     | 3657         |
+| 35 | [iobench] | Perfomance  | 225    | 441090     | 4542         |
+
+
+| id | type       | metric_name | metric | Start_tick | Elapsed_tick |
+|----|------------|-------------|--------|------------|--------------|
+| 30 | [cpubench] | Perfomance  | 70990  | 399600     | 7562         |
+| 30 | [cpubench] | Perfomance  | 78922  | 407181     | 6802         |
+| 30 | [cpubench] | Perfomance  | 78312  | 413998     | 6855         |
+| 30 | [cpubench] | Perfomance  | 77554  | 420866     | 6922         |
+| 30 | [cpubench] | Perfomance  | 88338  | 427802     | 6077         |
+| 30 | [cpubench] | Perfomance  | 81959  | 433896     | 6550         |
+| 30 | [cpubench] | Perfomance  | 98141  | 440455     | 5470         |
+| 30 | [cpubench] | Perfomance  | 262766 | 445934     | 2043         |
+| 30 | [cpubench] | Perfomance  | 262125 | 447985     | 2048         |
+| 30 | [cpubench] | Perfomance  | 262125 | 450039     | 2048         |
+
+
+
+
+### ¿Fue necesario modificar las métricas para que los resultados fueran comparables? ¿Por qué?
+
+
+(completar con las mtricas modificadas en caso de que asi sea)
+
+
+### ¿Qué cambios se observan con respecto al experimento anterior? ¿Qué comportamientos se mantienen iguales?
+
+El cambio mas notorio que se puede observar entre los experimentos es que, en el experimento 1, los procesos cpubound tenian elapsed_ticks demasiados estables indistintamente si tenian procesos cpubound o iobound en paralelo. En el experimento 2 podemos ver que esto cambia drasticamente cuando hay experimentos del tipo iobound ejecutandose en paralelo, por ejemplo: 
+
+Comparemos "cpubench 10 &; iobench 10 &; iobench 10 &; iobench 10 &" del experimento 1 con el mismo pero del experimento 2.
+
+(Experimento 1)
+| id | Type       | name_metric | Metric  | Start_tick | Elapsed_tick |
+|----|------------|-------------|---------|------------|--------------|
+| 5  | [cpubench] | Perfomance  | 2949626 | 3158       | 182          |
+| 5  | [cpubench] | Perfomance  | 2982400 | 3341       | 180          |
+| 5  | [cpubench] | Perfomance  | 2965922 | 3522       | 181          |
+| 5  | [cpubench] | Perfomance  | 2982400 | 3704       | 180          |
+| 5  | [cpubench] | Perfomance  | 2949626 | 3884       | 182          |
+| 5  | [cpubench] | Perfomance  | 2670805 | 4067       | 201          |
+| 5  | [cpubench] | Perfomance  | 2901794 | 4268       | 185          |
+| 5  | [cpubench] | Perfomance  | 2933508 | 4454       | 183          |
+| 5  | [cpubench] | Perfomance  | 2982400 | 4638       | 180          |
+| 5  | [cpubench] | Perfomance  | 2508560 | 4818       | 214          |
+
+
+(Experimento 2)
+| id | type       | metric_name | metric | Start_tick | Elapsed_tick |
+|----|------------|-------------|--------|------------|--------------|
+| 30 | [cpubench] | Perfomance  | 70990  | 399600     | 7562         |
+| 30 | [cpubench] | Perfomance  | 78922  | 407181     | 6802         |
+| 30 | [cpubench] | Perfomance  | 78312  | 413998     | 6855         |
+| 30 | [cpubench] | Perfomance  | 77554  | 420866     | 6922         |
+| 30 | [cpubench] | Perfomance  | 88338  | 427802     | 6077         |
+| 30 | [cpubench] | Perfomance  | 81959  | 433896     | 6550         |
+| 30 | [cpubench] | Perfomance  | 98141  | 440455     | 5470         |
+| 30 | [cpubench] | Perfomance  | 262766 | 445934     | 2043         |
+| 30 | [cpubench] | Perfomance  | 262125 | 447985     | 2048         |
+| 30 | [cpubench] | Perfomance  | 262125 | 450039     | 2048         |
+
+
+En ambos casos, estos procesos CPU-bound tienen corriéndose en paralelo 3 procesos iobound. Mientras que en el primero los elapsed_ticks se mantienen estables, en el segundo vemos que estos varían desde 2048 hasta 7562. Esto es un cambio bastante considerable que ocurre si se achica el quantum; el porqué ocurre eso está respondido más abajo.
+
+Este mismo fenómeno ocurre cuando se comparan también las tablas "iobench 10 &; cpubench 10 &; cpubench 10 &; cpubench 10 &" del experimento 1 y 2. Mientras que los del cpubound del experimento 1 se mantienen estables, hay un proceso cpubound del experimento 2 que tiene una gran variabilidad en sus elapsed_ticks.
+
+Notemos también que cuando se ejecutan solo procesos de un mismo tipo, los resultados de ambos experimentos no se ven modificados, es decir, se mantienen iguales en cuanto a comportamiento.
+
+
+
+
+### ¿Con un quantum más pequeño, se ven beneficiados los procesos iobound o los procesos cpubound?
+
+Los procesos beneficiados con un quantum más chico son los procesos iobound, ya que estos pasan más tiempo en general esperando por los recursos de I/O que ejecutándose dentro de la CPU. Al achicar el quantum, esto genera que, una vez terminen sus operaciones de I/O, tengan la CPU más rápidamente, mejorando así el tiempo de respuesta de estos procesos.
+
+Los procesos cpubound, por su lado, no se ven beneficiados ante este cambio, ya que al tener un quantum más chico significa que serán más frecuentes los cambios de contexto y, al necesitar un largo período de tiempo en CPU para avanzar de una manera significativa en su ejecución, estos procesos no mejorarán su rendimiento. Es más, podrían estar más tiempo en cambios de contexto que en procesamiento, lo cual reduciría su eficiencia.
