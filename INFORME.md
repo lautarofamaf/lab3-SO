@@ -606,7 +606,8 @@ No es adecuado hacer esta comparacion, que los procesos cpubound solo necesitan 
 
 #### Resultados de experimento 2:
 
-(poner el quatum con el que se dieron estas mediciones)
+Quantum = 10000
+Modificaciones en la metrica: NO
 
 #### iobench 10 &
 
@@ -879,6 +880,69 @@ Notemos también que cuando se ejecutan solo procesos de un mismo  tipo, los res
 Los procesos beneficiados con un quantum más chico son los procesos  iobound, ya que estos pasan más tiempo en general esperando por los  recursos de I/O que ejecutándose dentro de la CPU. Al achicar el  quantum, esto genera que, una vez terminen sus operaciones de I/O,  tengan la CPU más rápidamente, mejorando así el tiempo de respuesta de  estos procesos.
 
 Los procesos cpubound, por su lado, no se ven beneficiados ante este  cambio, ya que al tener un quantum más chico significa que serán más  frecuentes los cambios de contexto y, al necesitar un largo período de  tiempo en CPU para avanzar de una manera significativa en su ejecución,  estos procesos no mejorarán su rendimiento. Es más, podrían estar más  tiempo en cambios de contexto que en procesamiento, lo cual reduciría su eficiencia.
+
+
+### ¿Que pasa cuando definimos al quantum con un valor mas chico, por ejemplo quantum = 1000?
+
+Cuando hacemos estas mismas mediciones con un quantun mas chico sucede lo mismo que en la medicion anterior solo que con algunas ariistas mas pronunciadas. Tomemos la siguiente tabla "iobench 10 &; cpubench 10 &; cpubench 10 &; cpubench 10 &" con los resultados del experimento pero con el nuevo quantum:
+
+| id | type       | metric_name | metric | start_tick | elapsed_tick |
+|----|------------|-------------|--------|------------|--------------|
+| 10 | [cpubench] | Perfomance  | 24738  | 94724      | 217000       |
+| 10 | [cpubench] | Perfomance  | 22060  | 311991     | 243345       |
+| 10 | [cpubench] | Perfomance  | 24578  | 555583     | 218416       |
+| 10 | [cpubench] | Perfomance  | 25596  | 774334     | 209731       |
+| 10 | [cpubench] | Perfomance  | 28245  | 984443     | 190060       |
+| 10 | [cpubench] | Perfomance  | 34486  | 1174638    | 155663       |
+| 10 | [cpubench] | Perfomance  | 33231  | 1330539    | 161541       |
+| 10 | [cpubench] | Perfomance  | 32694  | 1492243    | 164198       |
+| 10 | [cpubench] | Perfomance  | 33887  | 1656590    | 158416       |
+| 10 | [cpubench] | Perfomance  | 33400  | 1815226    | 160725       |
+
+| id | type      | metric_name | metric | start_tick | elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
+| 5  | [iobench] | Perfomance  | 100    | 93783      | 101593       |
+| 5  | [iobench] | Perfomance  | 101    | 195884     | 101225       |
+| 5  | [iobench] | Perfomance  | 101    | 297523     | 100648       |
+| 5  | [iobench] | Perfomance  | 111    | 398564     | 91934        |
+| 5  | [iobench] | Perfomance  | 105    | 490849     | 97342        |
+| 5  | [iobench] | Perfomance  | 102    | 588371     | 100322       |
+| 5  | [iobench] | Perfomance  | 102    | 689236     | 99657        |
+| 5  | [iobench] | Perfomance  | 100    | 789220     | 101459       |
+| 5  | [iobench] | Perfomance  | 102    | 891210     | 99808        |
+| 5  | [iobench] | Perfomance  | 101    | 991346     | 101279       |
+
+| id | type       | metric_name | metric | start_tick | elapsed_tick |
+|----|------------|-------------|--------|------------|--------------|
+| 9  | [cpubench] | Perfomance  | 8427   | 94480      | 636996       |
+| 9  | [cpubench] | Perfomance  | 8385   | 731791     | 640206       |
+| 9  | [cpubench] | Perfomance  | 9436   | 1372327    | 568875       |
+| 9  | [cpubench] | Perfomance  | 13240  | 1941429    | 405449       |
+| 9  | [cpubench] | Perfomance  | 17573  | 2347066    | 305486       |
+| 9  | [cpubench] | Perfomance  | 64448  | 2652593    | 83296        |
+| 9  | [cpubench] | Perfomance  | 72260  | 2735955    | 74291        |
+| 9  | [cpubench] | Perfomance  | 71440  | 2810282    | 75144        |
+| 9  | [cpubench] | Perfomance  | 85312  | 2885475    | 62925        |
+| 9  | [cpubench] | Perfomance  | 59281  | 2948441    | 90557        |
+
+| id | type       | metric_name | metric | start_tick | elapsed_tick |
+|----|------------|-------------|--------|------------|--------------|
+| 7  | [cpubench] | Perfomance  | 13256  | 94444      | 404964       |
+| 7  | [cpubench] | Perfomance  | 13281  | 499749     | 404200       |
+| 7  | [cpubench] | Perfomance  | 9758   | 904210     | 550109       |
+| 7  | [cpubench] | Perfomance  | 9904   | 1454633    | 542001       |
+| 7  | [cpubench] | Perfomance  | 49602  | 1996782    | 108226       |
+| 7  | [cpubench] | Perfomance  | 54706  | 2105201    | 98130        |
+| 7  | [cpubench] | Perfomance  | 54296  | 2203485    | 98871        |
+| 7  | [cpubench] | Perfomance  | 53073  | 2302496    | 101149       |
+| 7  | [cpubench] | Perfomance  | 41257  | 2403761    | 130116       |
+| 7  | [cpubench] | Perfomance  | 53473  | 2534007    | 100393       |
+
+
+Lo que podemos notar de esta tabla es como pasaron los procesos iobound a ser mas estables y predecibles, y como los procesos cpubound perdieron esa consistencia que los caracterizaba con el quantum inicial. La observacion general de ir achicando el quatum es que los procesos que mas necesitan la cpu se vuelven demasiados ineficientes mientras que los procesos iobound se ejecutan y planifican de manera mucho mas dinamica ya que entregan la cpu bastante rapido y la tienen de nuevo en poco tiempo cuando la vuelven a solicitar. Además, al tener un quantum cada vez mas chico, los cambios de contextos se vuelven mucho mas frecuente teniendo como consecuencia que estos experimentos tomen mas tiempo en ser ejecutados, y no necesariamente unos cuantos segundos mas, sinó varios minutos mas. Por ejemplo estos mismos resultados con el quantum original de 1000000 tardó menos de 1 minuto mientras con que con el quantum en 1000 se tardó aproximadamente 16 minutos en las mismas condiciones.
+
+Conclusion : Con estos experimentos entendimos porque en xv6 se decidió definir un quatum de 1000000, si el quatum es demasiado pequeño entonces utilizar los recursos de la cpu se vuelve demasiado ineficiente, ya que mucho tiempo de ejecucion se va con los cambios de contextos. Al definir un quatum un poco mas grande se les da a los procesos cpubound un tiempo razonable para que avancen sigificativamente con su ejecucion. Si bien los procesos iobound no se verían perjudicados con un quantum mas chico, la necesidad de que la cpu sea utilizada al máximo va de la mano con que se consideren ambos tipos de procesos, por lo que mientras los procesos iobound esperan que terminen sus operaciones de I/O, los cpubound se ejecutan mas tiempo en cpu, permitiendo que el tiempo transcurrido sea aprovechado mas por operaciones de I/O y cómputo que por cambios de contextos.
+
 
 ## Tercera Parte: Asignar prioridad a los procesos
 
