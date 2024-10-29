@@ -477,6 +477,7 @@ find_highest_priority_proc(void)
 //  - swtch to start running that process.
 //  - eventually that process transfers control
 //    via swtch back to the scheduler.
+uint count_boost = 0;
 void scheduler(void)
 {
   struct proc *p;
@@ -488,6 +489,24 @@ void scheduler(void)
     // Avoid deadlock by ensuring that devices can interrupt.
     intr_on();
 
+    count_boost++;
+    if (count_boost == 10000)
+    {
+      count_boost = 0;
+
+      for (p = proc; p < &proc[NPROC]; p++)
+      {
+        acquire(&p->lock);
+        if (p->state == RUNNABLE)
+        {
+          if (p->priority < NPRIO - 1)
+          {
+        p->priority = NPRIO - 1;
+          }
+        }
+        release(&p->lock);
+      }
+    }
     // Buscar el proceso con la prioridad más alta
     p = find_highest_priority_proc();
     if (p != 0)
