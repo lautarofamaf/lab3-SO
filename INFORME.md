@@ -233,7 +233,7 @@ En el experimento de
 
 En lo cual se ve como el `start_tick` del proceso con id:23 está dado por 30860 y `elapsed_tick` 519, por lo tanto, si no fuera concurrente no puede existir un proceso cuyo `start_tick` se encuentre entre 30860 y 31379 ticks. El proceso con id:26 tiene `start_tick` 30866. Queda demostrado concurrencia.
 #### ¿En promedio, qué proceso o procesos se ejecutan primero? Hacer una observación cualitativa.
-![alt text](<Chart Title(10).png>)
+![GRAFICO](<GRAFICO_IOVSCPU.png>)
 En el grafico comparamos los tiempos de Elapsed_tick de los proceso IO y CPU en experimentos particulares para obserbar que procesos se terminan de ejecutar primero, como podemos observar el promedio de Elapsed_tick de los CPU en ambos experimentos es menor que lo IO. Esto en nos dice que CPUBENCH generalmete termina primero
 
 Experimento particulares : 
