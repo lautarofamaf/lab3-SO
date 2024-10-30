@@ -4,7 +4,7 @@ Integrantes del grupo(03):
 * Lautaro Ezequiel Deco
 * Nehuen Emanuel Guevara
 * Tomas Fabian Torres
-* Fefe xd
+* Federico Julian Taborda
 
 ## Primera parte: Estudiando el planificador de xv6-riscv
 
@@ -233,7 +233,16 @@ En el experimento de
 
 En lo cual se ve como el `start_tick` del proceso con id:23 está dado por 30860 y `elapsed_tick` 519, por lo tanto, si no fuera concurrente no puede existir un proceso cuyo `start_tick` se encuentre entre 30860 y 31379 ticks. El proceso con id:26 tiene `start_tick` 30866. Queda demostrado concurrencia.
 #### ¿En promedio, qué proceso o procesos se ejecutan primero? Hacer una observación cualitativa.
-// Aca habría que hacer una grafica busquen la forma para hacer una grafica con los tiempos de start_tick de los procesos en los experimentos iobench 10 &; cpubench 10 &; cpubench 10 &; cpubench 10 & y cpubench 10 &; iobench 10 &; iobench 10 &; iobench 10 &. Y de ahí van a poder ver cuales se suelen ejecutar primero.
+![alt text](<Chart Title(10).png>)
+En el grafico comparamos los tiempos de Elapsed_tick de los proceso IO y CPU en experimentos particulares para obserbar que procesos se terminan de ejecutar primero, como podemos observar el promedio de Elapsed_tick de los CPU en ambos experimentos es menor que lo IO. Esto en nos dice que CPUBENCH generalmete termina primero
+
+Experimento particulares : 
+
+-iobench 10 &; cpubench 10 &; cpubench 10 &; cpubench 10 &
+-cpubench 10 &; iobench 10 &; iobench 10 &; iobench 10 &
+
+
+
 ### 3. ¿Cambia el rendimiento de los procesos iobound con respecto a la cantidad y tipo de procesos que se estén ejecutando en paralelo? ¿Por qué?
 
 Analicemos cpubench 10; iobench10; iobench10; iobench 10; 
