@@ -454,7 +454,6 @@ struct proc *
 find_highest_priority_proc(void)
 {
   struct proc *p, *highest_priority_proc = 0;
-
   for (p = proc; p < &proc[NPROC]; p++)
   {
     acquire(&p->lock);
@@ -490,6 +489,10 @@ void scheduler(void)
 
     // Buscar el proceso con la prioridad más alta
     p = find_highest_priority_proc();
+    if(p == 0) // Es decir find_highest_priority_proc no encontro un proceso RUNNABLE
+    {
+      asm volatile("wfi"); // WFI: wait for Interrupts, similar a HLT ya que pone el procesador a dormir hasta recibir una Interrpucion
+    }
     if (p != 0)
     {
       acquire(&p->lock);
