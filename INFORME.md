@@ -608,8 +608,17 @@ Esta función es clave para implementar un planificador que seleccione el proces
 ### 2. Repita las mediciones de la segunda parte para ver las propiedades del nuevo planificador.
 
 ### 3. Para análisis responda: ¿Se puede producir *starvation* en el nuevo planificador? Justifique su respuesta.
+Nuestra implementación actual sufre de starvation. Si recordamos las reglas de la MLFQ mencionadas en el OSTEP:
 
+    Regla 1: Si Prioridad(A) > Prioridad(B), se ejecuta A (B no).
+    Regla 2: Si Prioridad(A) = Prioridad(B), se ejecutan A y B en RR.
+    Regla 3: Cuando un trabajo ingresa al sistema, se coloca en la prioridad más alta (la cola de más arriba).
+    Regla 4: Una vez que un trabajo utiliza su tiempo asignado en un nivel dado (independientemente de cuántas veces haya renunciado a la CPU), su prioridad se reduce (es decir, se mueve una cola hacia abajo). (SE ACLARA ANTES QUE NO ES EL MISMO COMPORTAMIENTO)
+    Regla 5: Después de un período de tiempo determinado S, mover todos los trabajos del sistema a la cola más alta.
 
+¿Qué pasa si hay cpubench en las colas de menor prioridad y llega un montón de iobench?
+Lo que ocurre es que se producirá starvation: los procesos CPU se ejecutarán en un tiempo muy lejano o, directamente, no se ejecutarán.
+Esto sucede por la falta de la Regla 5, que establece el ascenso de todos los procesos a la prioridad más alta en un tiempo determinado. Si esto sucediera, eventualmente los procesos CPU volverían a ser planificados.
 
 #### Resultados de experimento 1(RR):
 
