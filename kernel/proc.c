@@ -495,31 +495,41 @@ void scheduler(void)
       acquire(&p->lock);
       if (p->state == RUNNABLE)
       {
-        // Switch to chosen process. It is the process's job
-        // to release its lock and then reacquire it
-        // before jumping back to us.
-        p->state = RUNNING;
-        c->proc = p;
-        p->count_sched++;
-        p->quantum_used = 1;
-        swtch(&c->context, &p->context);
-        if (p->quantum_used)
-        {
-          if (p->priority > 0)
-          {
-            p->priority--;
+        int run_times = 3; // Priority 0
+        if (p->priority == 1)
+          run_times = 2; // Priority 1
+        else if (p->priority == 2)
+          run_times = 1; // Priority 2
+
+        for (int i = 0; i < run_times; i++) {
+          // Switch to chosen process. It is the process's job
+          // to release its lock and then reacquire it
+          // before jumping back to us.
+          p->state = RUNNING;
+          c->proc = p;
+          p->count_sched++;
+          p->quantum_used = 1;
+          swtch(&c->context, &p->context);
           }
-        }
-        if (!p->quantum_used)
-        {
-          if (p->priority < NPRIO - 1)
+
+          if (p->quantum_used)
           {
-            p->priority++;
+            if (p->priority > 0)
+            {
+              p->priority--;
+            }
           }
+          if (!p->quantum_used)
+          {
+            if (p->priority < NPRIO - 1)
+            {
+              p->priority++;
+            }
+          // Process is done running for now.
+          // It should have changed its p->state before coming back.
+          c->proc = 0;
+
         }
-        // Process is done running for now.
-        // It should have changed its p->state before coming back.
-        c->proc = 0;
       }
       release(&p->lock);
     }
