@@ -128,7 +128,7 @@ Existe una función llamada **swtch**  implementada  en el archivo swtch.S (cód
 Hay varias funciones donde un proceso deja de ser ejecutado, ya sea por un cambio de contexto o por un cambio de estado. Entre ellas estan:
  - Funcion **swtch**: Es la funcion en codigo maquina encargada de hacer el cambio de contexto 
  - Funcion **sleep**: Esta fucion manda a dormir un  poceso 
- - Funcion **yeild**: Cunado un proceso usa esta funcion, sede voluntariamente CPU
+ - Funcion **yeild**: Cuando un proceso usa esta funcion, sede voluntariamente CPU
  - Funcio **sched**: Realiza un cambio de contexto cuando sea necesario llamando a swtch
  -  Funcion **exit** : Provoca tambien con la diferencia que sera de manera definitiva
 
@@ -166,21 +166,8 @@ se realiza toda la lógica para que el proceso actual derive CPU para que se eje
 
 Sí, el cambio de contexto consume tiempo del *quantum*. Basamos esta respuesta en un experimento en el que se disminuyó el *quantum* a valores muy pequeños y se observó el comportamiento del sistema. 
 
-En el experimento, al reducir el *quantum* a 100 ticks, se observó que el sistema no podía ni siquiera inicializar el sistema operativo xv6. Esto sugiere que para iniciar la terminal, se deben realizar una serie de procesos que dependen de los cambios de contexto para avanzar. Al tener un *quantum* tan reducido, el tiempo consumido por los cambios de contexto es suficiente para agotar el *quantum* disponible, impidiendo que los procesos ejecuten su código efectivamente. Como resultado, el sistema entra en un bucle de cambios de contexto sin ejecutar el código necesario, confirmando que el cambio de contexto consume parte del *quantum*.
+En el experimento, al reducir el *quantum* a 100 ciclos de cpu, se observó que el sistema no podía ni siquiera inicializar el sistema operativo xv6. Esto sugiere que para iniciar la terminal, se deben realizar una serie de procesos que dependen de los cambios de contexto para avanzar. Al tener un *quantum* tan reducido, el tiempo consumido por los cambios de contexto es suficiente para agotar el *quantum* disponible, impidiendo que los procesos ejecuten su código efectivamente. Como resultado, el sistema entra en un bucle de cambios de contexto sin ejecutar el código necesario, confirmando que el cambio de contexto consume parte del *quantum*.
 
-Podemos crear una visualización gráfica en Python para presentar la línea de tiempo de ticks y cambios de contexto. La gráfica puede mostrar cada quantum y destacar el tiempo consumido por el cambio de contexto al inicio de cada quantum. Esta imagen es acorde a como creemos que funcionan los quantums y cambios de contexto en xv6:
-
-
-
-![Línea de Tiempo de Quantum y Cambio de Contexto](quantum_context_switch_timeline.png)
-
-
-- Cada segmento rojo al inicio de un quantum representa el tiempo consumido por el **cambio de contexto (CS)**.
-- Los segmentos verdes representan el tiempo restante del **quantum** dedicado a la **ejecución del proceso**.
-
-Esto ilustra cómo el cambio de contexto consume una porción del quantum antes de que el proceso comience a ejecutar sus instrucciones.
-
-Notemos que esta es una mera representacion de como pensamos que funciona xv6.
 
 ## Segunda parte: Medir operaciones de cómputo y de entrada/salida
 
@@ -190,7 +177,7 @@ Metrica ->  k-operaciones de  CPU por tick (**kops / ticks**)  -> `metric = (tot
 `iobench`:
 Metrica -> operaciones I/O por tick (**iops / ticks**) -> `metric = (total_iops * 1000) / elapsed_ticks`
 
-Algo a destacar y notar es que los **kops** y **iops** son multiplicados por 1000, esta fue una solucion que dimos ya que nos dimos cuenta que a menudo la metrica en `iobench` daba un numero cercano a 0(aproximadamente), y como sabemos que se redondea, notamos que perdiamos informacion asi que decidimos multiplicar por 1000 para dar un tipo de "rescalado" a nuestra metrica para asi no perder informacion, luego en`cpubench`tambien lo hicimos para dar un tipo de uniformidad a la hora de comparar resultados.
+Algo a destacar y notar es que los **kops** y **iops** son multiplicados por 1000, esta fue una solucion que dimos ya que nos dimos cuenta que a menudo la metrica en `iobench` daba un numero de una cifra, y como sabemos que se redondea, notamos que perdiamos informacion asi que decidimos multiplicar por 1000 para dar un tipo de "rescalado" a nuestra metrica para asi no perder informacion, luego en`cpubench`tambien lo hicimos para dar uniformidad a la hora de comparar resultados.
 
 ### Experimento 1: ¿Cómo son planificados los programas iobound y cpubound?
 Para ver los resultados del experimento 1, consulta la [Tabla de Resultados del Experimento 1](#experimento1).
@@ -221,29 +208,12 @@ Estos parámetros podrían cambiar en experimentos futuros, pero si lo hacen, lo
 
 No, los procesos no se ejecutan en paralelo ya que al hacer `make CPUS=1 qemu` estamos corriendo el emulador con un solo núcleo de procesador, es decir, lo estamos limitando a que no haya ejecución paralela multinúcleo.
 
-Sin embargo, podemos decir que los procesos sí se ejecutan concurrentemente. Esto es fácil de ver dado que en las ejecuciones del experimento nos da el valor de `start_tick` y el valor de `elapsed_tick`, por lo que la suma de esos sería `end_tick`. Esto se da por la fórmula (*end_tick - start_tick = elapsed_tick*). Ahora, esto nos dice que si los procesos no se ejecutan concurrentemente, entonces entre los ticks marcados por `start_tick` y `end_tick` de un proceso no puede encontrarse un `start_tick` de otro proceso. Por lo tanto, si encontramos un ejemplo en el que esto suceda, significa que los procesos actúan de manera concurrente.
 
-###### Ejemplo:
-En el experimento de
-###### iobench 10 &; cpubench 10 &; cpubench 10 &; cpubench 10 &
-| id | Type       | name_metric | Metric  | Start_tick | Elapsed_tick |
-|----|------------|-------------|---------|------------|--------------|
-| 23 | [cpubench] | Perfomance  | 1034358 | 30860      | 519          |
-| 26 | [cpubench] | Perfomance  | 1100065 | 30866      | 488          |
 
-En lo cual se ve como el `start_tick` del proceso con id:23 está dado por 30860 y `elapsed_tick` 519, por lo tanto, si no fuera concurrente no puede existir un proceso cuyo `start_tick` se encuentre entre 30860 y 31379 ticks. El proceso con id:26 tiene `start_tick` 30866. Queda demostrado concurrencia.
+
 #### ¿En promedio, qué proceso o procesos se ejecutan primero? Hacer una observación cualitativa.
   
-![GRAFICO](<GRAFICO_IOVSCPU.png>)
-
-
-
-En el grafico comparamos los tiempos de Elapsed_tick de los proceso IO y CPU en experimentos particulares para obserbar que procesos se terminan de ejecutar primero, como podemos observar el promedio de Elapsed_tick de los CPU en ambos experimentos es menor que lo IO. Esto en nos dice que CPUBENCH generalmete termina primero
-
-Experimento particulares : 
-
--iobench 10 &; cpubench 10 &; cpubench 10 &; cpubench 10 &
--cpubench 10 &; iobench 10 &; iobench 10 &; iobench 10 &
+Dado que la política de implementación es *Round-Robin*, el proceso que se ejecuta primero es el primero en la cola, es decir el primer proceso en ser reconocido por el sistema es el primero que se va a ejecutar.
 
 
 
@@ -267,12 +237,14 @@ Analicemos cpubench 10; iobench10; iobench10; iobench 10;
 |----|-----------|-------------|--------|------------|--------------|
 | 7  | [iobench] | Perfomance  | 1025   | 3159       | 999          |
 
-Podemos ver que los procesos comenzaron en un star_tick bastante parecido, es decir, casi al mismo tiempo.Nos fijemos que los procesos iobench tuvieron un elapsed_tick bastante mas largo al del cpubench mientras este se seguia ejecutando, una vez que el cpubench terminó su ejecución los valores de elapsed_tick bajaron considerablemente:
+Podemos ver que los procesos comenzaron en un star_tick bastante parecido, es decir, en quantums no distantes.Nos fijemos que los procesos iobench tuvieron un elapsed_tick bastante mas largo al del cpubench mientras este se seguia ejecutando, una vez que el cpubench terminó su ejecución los valores de elapsed_tick bajaron considerablemente:
 
   (ultima ejecucion de cpubench termina en el tick 5032)
+  | id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
+|----|-----------|-------------|--------|------------|--------------|
 | 5  | [cpubench] | Perfomance  | 2508560 | 4818       | 214          |
 
-A partir de ahora notamos una baja notable el el elapsed_tick de los procecesos iobound y ademas la metrica de estos aumentó considerablemente, esto quiere decir que mientras el proceso cpubench se ejecutaba esto afectaba el rendimiento de los procesos iobound, ya que estuvieron mas tiempo de ticks pero su metrica (cantidad de operaciones por ticks) fue considerablemente menor a los que se registraron luego de ejecutarse el cpubench.
+A partir de ahora notamos una baja notable el el elapsed_tick de los procecesos iobound y ademas la metrica de estos aumentó considerablemente, esto quiere decir que mientras el proceso cpubench se ejecutaba esto afectaba el rendimiento de los procesos iobound, ya que estuvieron más ticks (más quantums) pero su metrica (cantidad de operaciones por ticks) fue considerablemente menor a los que se registraron luego de ejecutarse el cpubench.
 
 | id | Type      | name_metric | Metric | Start_tick | Elapsed_tick |
 |----|-----------|-------------|--------|------------|--------------|
@@ -328,7 +300,7 @@ Por ultimo nos fijemos en como se comportan estas metricas y ticks una vez que s
 | 7  | [iobench] | Perfomance  | 3631   | 6326       | 282          |
 | 7  | [iobench] | Perfomance  | 3112   | 6609       | 329          |
 
-Primero notemos la gran variabilidad en los elapsed_tick, esto puede deberse a varios motivos tales como la competencia entre recursos del sistema, tambien puede deberse a quue accediendo al disco se generen cuellos de botellas si hay varios procesos haciendo lo mismo (que los hay), etc, generando que el tiempo en tick de los procesos aumente o no. En la metrica tambien se ve reflejado esta variabilidad pero está ligado a lo mismo que genera esta "latencia" en los elapsed tick, es decir, que la competencia por recursos de I/O afecta el rendimiento de los procesos iobound.
+Primero notemos la gran variabilidad en los elapsed_tick, esto puede deberse a varios motivos tales como la competencia entre recursos del sistema, tambien puede deberse a que accediendo al disco se generen cuellos de botellas si hay varios procesos haciendo lo mismo (que los hay), etc, generando que el tiempo en tick de los procesos aumente o no. En la metrica tambien se ve reflejado esta variabilidad pero está ligado a lo mismo que genera esta "latencia" en los elapsed tick, es decir, que la competencia por recursos de I/O afecta el rendimiento de los procesos iobound.
 
 Conclusion:  Los procesos iobound si se ven afectados en rendimientos por los procesos que se ejecutan en paeralelo. Sufren de un costo de rendimiento mas alto si estos procesos son cpubound pero tambien se ven afectados por otros procesos iobound (pero en menor medida). Que se afecte el rendimiento puede deberse a la competencia de los recursos de I/O y que los procesos cpubench tienen a dominar la cpu como vimos en estas tablas.
 
