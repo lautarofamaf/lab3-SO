@@ -607,6 +607,26 @@ Esta función es clave para implementar un planificador que seleccione el proces
 
 ### 2. Repita las mediciones de la segunda parte para ver las propiedades del nuevo planificador.
 
+Para hacer este inciso decidimos tomar el experimento de round robin con quantum = 100.000 ticks y el de mlfq con quantum = 100.000 y compararlos para ver que conclusiones podíamos sacar.
+
+Round robin: 
+(Promedios de las 6 tablas con quantum = 100.000)
+Métrica: 829,292
+start_tick: 14,663
+elapsed_tick: 387
+
+Mlfq:
+(Promedios de las 6 tablas con quantum = 100.000)
+Métrica: 764,911
+start_tick: 10,479
+elapsed_tick: 412
+
+Primero observemos que la métrica promedio del Round Robin es mas alto que el del mlfq, esto puede deberse a que, aunque los procesos iobound en MLFQ obtienen prioridad, si un proceso está esperando I/O, no va a contribuir a la métrica. Esto puede resultar en un menor total_cpu_kops en comparación con RR, donde todos los procesos, incluso los iobound, están constantemente en rotación, es decir, tienen la oportunidad de ejecutar y contribuir a la métrica incluso si no son intensivos en cpu, lo que puede llevar a una suma total mayor de KOPS contabilizados.
+
+Ahora nos fijemos en los start_ticks. Que el promedio de start_tick del mlfq sea menor al de RR se debe a que este ultimo tiene una estructura mas simple de planificacion, asemejandose a una cola, lo que genera que el tiempo de espera de un proceso cualquiera se acumule y sea mas largo antes de ejecutarse, ya que no prioriza los de menor uso de cpu como si lo hace el mlfq.
+
+Por último nos concentremos en los elapsed_ticks. Esta última comparación si nos llevó mas tiempo analizar ya que no encontrabamos el motivo por el cual el promedio de elapsed_tick sea menor en RR que en mlfq. Después de estar un buen rato indagando hipótesis nos dimos cuenta de lo siguiente: Este resultado, que puede parecer contraintuitivo, nos muestra una clara ventaja en los procesos del tipo iobound con respecto a los cpubound con un planificador del tipo mlfq. Es decir, mlfq optimiza el tiempo de respuesta para iobound al costo de tiempos ligeramente más largos para cpubound, lo que genera un elapsed_tick promedio general más alto, pero con mejor rendimiento para los procesos iobound.
+
 ### 3. Para análisis responda: ¿Se puede producir *starvation* en el nuevo planificador? Justifique su respuesta.
 Nuestra implementación actual sufre de starvation. Si recordamos las reglas de la MLFQ mencionadas en el OSTEP:
 
